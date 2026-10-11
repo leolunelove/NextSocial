@@ -130,14 +130,14 @@
   setInterval(()=>sync().catch(()=>{}),30000);
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync().catch(()=>{});});
   async function reviewPage(secret){
-    document.querySelector('.workspace').hidden=true;document.title='A post for your review — Social Hub';
+    document.querySelector('.workspace').hidden=true;document.title='A post for your review — NextSocial';
     const page=A.el('main','review-page');document.body.append(page);
-    const head=A.el('header','review-header'),brand=A.el('a','wordmark','Social Hub');brand.href=location.pathname;head.append(brand,A.el('span','review-topnote','A SECOND PAIR OF EYES'));page.append(head);
+    const head=A.el('header','review-header'),brand=A.el('a','wordmark','NextSocial');brand.href=location.pathname;head.append(brand,A.el('span','review-topnote','A SECOND PAIR OF EYES'));page.append(head);
     const content=A.el('div','review-content');content.append(A.el('p','eyebrow','SENT FOR YOUR REVIEW'),A.el('h1','','One moment.'));page.append(content);
     if(!TOKEN.test(secret)){content.replaceChildren(A.el('h1','','This link isn’t quite right.'),A.el('p','subtitle','Ask the sender for a new approval link.'));return;}
     try{
       const p=await request('/api/review',secret);draw(p);
-    }catch(e){content.replaceChildren(A.el('p','eyebrow','SOCIAL HUB'),A.el('h1','','This review is unavailable.'),A.el('p','subtitle',e.message));}
+    }catch(e){content.replaceChildren(A.el('p','eyebrow','NEXTSOCIAL'),A.el('h1','','This review is unavailable.'),A.el('p','subtitle',e.message));}
     function draw(p){
       content.replaceChildren(A.el('p','eyebrow','SENT FOR YOUR REVIEW'),A.el('h1','',p.title||'A post for your review.'),A.el('p','subtitle',`${p.platform} · ${H.dateLabel(p.plannedDate)}`));
       const grid=A.el('div','review-grid'),preview=A.el('div','review-preview'),form=A.el('div','review-response');

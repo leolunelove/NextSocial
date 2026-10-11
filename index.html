@@ -7,7 +7,7 @@
   <meta name="description" content="A small, private workspace for your next social post. Drafts stay on your device. Share selected posts for approval.">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://qbkrqibmolaetilruxki.supabase.co; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
-  <title>Social Hub — Your personal content workspace</title>
+  <title>NextSocial — Your personal content workspace</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="style.css">
   <script src="core.js" defer></script>
@@ -38,18 +38,18 @@
   </defs></svg>
   <div class="workspace">
     <header class="topbar">
-      <a class="wordmark" href="./index.html" aria-label="Social Hub home"><img src="icon.svg" alt="" width="30" height="30">Social Hub</a>
+      <a class="wordmark" href="./index.html" aria-label="NextSocial home"><img src="icon.svg" alt="" width="30" height="30">NextSocial</a>
       <button class="primary" id="add" disabled><svg><use href="#i-plus"/></svg>Add <span class="desktop-label">content</span></button>
     </header>
     <main>
       <div class="intro">
-        <div><p class="eyebrow">YOUR CONTENT</p><h1>A home for your next post.</h1><p class="subtitle">Paste your content. Add the details.<br>Send it for a second pair of eyes.</p></div>
+        <div><p class="eyebrow">YOUR NEXT POST</p><h1>Good things come next.</h1><p class="subtitle">From a first idea to a final yes.<br>A little space for everything you’re posting next.</p></div>
         <div class="today" title="Approved posts planned for today"><span class="today-icon"><svg><use href="#i-calendar"/></svg></span><div><span class="today-title">Today</span><span id="today-count">0 posts ready</span></div><span class="today-number" id="today-number">0</span></div>
       </div>
       <div id="error-banner" role="alert" hidden></div>
       <button class="dropzone" id="dropzone" disabled>
         <span class="drop-icon"><svg><use href="#i-image"/></svg><span>+</span></span>
-        <span><strong>Start with an image.</strong><span class="drop-subtitle">Drop it here, choose a file, or paste <kbd id="paste-shortcut">⌘ V</kbd></span></span>
+        <span><strong>Your next post starts here.</strong><span class="drop-subtitle">Drop it here, choose a file, or paste <kbd id="paste-shortcut">⌘ V</kbd></span></span>
         <span class="drop-arrow"><svg><use href="#i-arrow"/></svg></span>
       </button>
       <section aria-labelledby="up-next-heading"><div class="section-head"><h2 id="up-next-heading"><span class="status-dot green"></span>Up next <span class="count" id="approved-count">0</span></h2><span class="section-note">Ready when you are</span></div><div id="approved-list" class="post-list"></div></section>
@@ -63,10 +63,11 @@
   <input type="file" id="import-input" accept="application/json,.json" hidden>
   <div class="drop-overlay" id="drop-overlay" hidden><svg><use href="#i-image"/></svg><h2>A new idea? Drop it here.</h2><p>Each image becomes its own post.</p></div>
   <dialog id="editor" aria-labelledby="editor-heading">
-    <div class="dialog-header"><div><span class="eyebrow">THE DETAILS</span><h2 id="editor-heading">A little context goes a long way.</h2></div><button id="close-editor" class="icon-button" aria-label="Close preview"><svg><use href="#i-close"/></svg></button></div>
+    <div class="dialog-header"><div><span class="eyebrow">THE DETAILS</span><h2 id="editor-heading">Make it ready to share.</h2></div><button id="close-editor" class="icon-button" aria-label="Close preview"><svg><use href="#i-close"/></svg></button></div>
+    <div class="editor-mobile-tabs" role="tablist" aria-label="Post editor view"><button id="editor-details-tab" role="tab" aria-selected="true" aria-controls="editor-details-pane">Details</button><button id="editor-preview-tab" role="tab" aria-selected="false" aria-controls="editor-preview-pane">Preview</button></div>
     <div class="editor-grid">
-      <div class="preview-pane"><div id="preview-tabs" class="preview-tabs" role="tablist" aria-label="Preview platform"></div><div id="mockup" role="tabpanel" aria-label="Social post preview"></div><p id="crop-note" class="preview-note"></p><p class="preview-disclaimer">Feed preview · Layouts can vary by device.</p></div>
-      <div class="details-pane"><div class="detail-top"><span id="editor-status" class="status-badge"></span><span id="save-state" role="status">Saved on this device</span></div>
+      <div id="editor-preview-pane" class="preview-pane"><div id="preview-tabs" class="preview-tabs" role="tablist" aria-label="Preview platform"></div><div id="mockup" role="tabpanel" aria-label="Social post preview"></div><p id="crop-note" class="preview-note"></p><p class="preview-disclaimer">Feed preview · Layouts can vary by device.</p></div>
+      <div id="editor-details-pane" class="details-pane"><div class="detail-top"><span id="editor-status" class="status-badge"></span><span id="save-state" role="status">Saved on this device</span></div>
         <label for="post-title">Post title</label><input id="post-title" maxlength="200" placeholder="Give this idea a name" autocomplete="off">
         <fieldset id="platform-field"><legend>Posting to</legend><div id="platform-choices" class="platform-choices"></div></fieldset>
         <p id="suggestion" class="field-hint"></p>
@@ -85,7 +86,7 @@
   <noscript><p class="noscript">Please enable JavaScript to use your local workspace.</p></noscript>
 
   <dialog id="profile-dialog" aria-labelledby="profile-heading">
-    <header class="dialog-header"><div><span class="eyebrow">A LITTLE EXTRA</span><h2 id="profile-heading">Your picture, in context.</h2></div><button id="profile-close" class="icon-button" aria-label="Close profile preview"><svg><use href="#i-close"/></svg></button></header>
+    <header class="dialog-header"><div><span class="eyebrow">PROFILE STUDIO</span><h2 id="profile-heading">See yourself in the feed.</h2></div><button id="profile-close" class="icon-button" aria-label="Close profile preview"><svg><use href="#i-close"/></svg></button></header>
     <div class="profile-grid">
       <div class="profile-preview"><div class="profile-instagram">Instagram <svg><use href="#i-instagram"/></svg></div>
         <div class="profile-stage"><div id="profile-bubble" hidden>A little thought…</div><div class="profile-ring profile-large"><div class="profile-face"><img alt="Your profile picture" hidden><span>you</span></div></div><strong>your.name</strong><span class="profile-context">Profile picture</span></div>

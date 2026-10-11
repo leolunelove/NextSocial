@@ -1,4 +1,4 @@
-# Social Hub
+# NextSocial
 
 A small workspace for preparing posts and getting a second pair of eyes.
 
@@ -19,3 +19,7 @@ A quiet footer utility for trying a profile photo with an Instagram story ring
 and Notes bubble. Paste, upload or drop an image; adjust zoom and position.
 Photo and settings stay in a separate IndexedDB store on this device and are
 not uploaded or included in post backups.
+
+Previously Social Hub. Existing local drafts, backups and review links remain
+compatible. Hosting stays at the existing social-hub address. Mobile editing
+uses separate Details and Preview tabs.

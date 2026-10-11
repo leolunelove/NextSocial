@@ -1,4 +1,4 @@
-/* Social Hub. No requests, trackers, accounts, or remote assets. */
+/* NextSocial local workspace. Selected review copies are shared by sharing.js. */
 (() => {
   'use strict';
   const H = window.Hub, store = window.PostStore;
@@ -43,7 +43,7 @@
       const items = H.sortPosts(posts,status); $(status + '-count').textContent = items.length;
       const container = $(status + '-list'); container.replaceChildren();
       if (!items.length) {
-        const data = status === 'approved' ? ['A clear little runway.','Approve a post and it will be ready here.','check'] : status === 'pending' ? ['Start with something worth sharing.','Add an image. The rest can come later.','image'] : ['All caught up.','Posts you mark as posted will appear here.','check'];
+        const data = status === 'approved' ? ['Ready for what’s next.','Approved posts will line up here, ordered by date.','check'] : status === 'pending' ? ['Every post starts with an idea.','Paste an image above, then add the details and get a second look.','image'] : ['All caught up.','Posts you mark as posted will appear here.','check'];
         container.append(empty(...data));
       }
       for (const p of items) container.append(row(p));
@@ -84,11 +84,22 @@
   }
   function openEditor(id) {
     const p = posts.find(p => p.id === id); if (!p) return;
-    selectedId = id; dirty = {}; previewPlatform = p.platform; clearError();
+    selectedId = id; dirty = {}; previewPlatform = p.platform; setEditorView('details'); clearError();
     fillEditor(); renderTabs(); renderMockup(); $('editor').showModal(); document.body.classList.add('modal-open');
     // Keep the image and preview tabs visible on opening, including on mobile.
     $('close-editor').focus({preventScroll:true}); $('editor').scrollTop = 0;
   }
+  function setEditorView(view) {
+    $('editor').dataset.view=view;
+    $('editor').querySelector('.editor-grid').scrollTop=0;
+    $('editor-details-tab').setAttribute('aria-selected',String(view==='details'));
+    $('editor-preview-tab').setAttribute('aria-selected',String(view==='preview'));
+  }
+  $('editor-details-tab').addEventListener('click',()=>setEditorView('details'));
+  $('editor-preview-tab').addEventListener('click',()=>setEditorView('preview'));
+  for(const id of ['editor-details-tab','editor-preview-tab'])$(id).addEventListener('keydown',e=>{
+    if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) { e.preventDefault(); const view=e.key==='Home'?'details':e.key==='End'?'preview':$('editor').dataset.view==='details'?'preview':'details';setEditorView(view);$('editor-'+view+'-tab').focus(); }
+  });
   function fillEditor() {
     const p = current(); if (!p) return;
     $('post-title').value = p.title; $('post-caption').value = p.caption; $('post-date').value = p.plannedDate;
@@ -225,7 +236,7 @@
       for (const p of data) { const { image,...metadata } = p; records.push({...metadata,image:await dataURL(image)}); }
       const blob = new Blob([JSON.stringify({app:'social-hub',version:1,exportedAt:new Date().toISOString(),posts:records})],{type:'application/json'});
       if (blob.size > H.limits.backup) throw new Error('This backup exceeds the 250 MB import limit.');
-      download(blob,`social-hub-backup-${H.dateKey()}.json`); toast(`Backup downloaded. ${data.length} ${data.length === 1 ? 'post' : 'posts'}, images included.`);
+      download(blob,`nextsocial-backup-${H.dateKey()}.json`); toast(`Backup downloaded. ${data.length} ${data.length === 1 ? 'post' : 'posts'}, images included.`);
     } finally { busy = false; $('export').disabled = false; }
   }
   async function importBackup(file) {
@@ -234,7 +245,7 @@
       if (file.size > H.limits.backup) throw new Error('Please import a backup smaller than 250 MB.');
       toast('Checking your backup…'); let data;
       try { data = JSON.parse(await file.text()); } catch { throw new Error('This is not a valid JSON backup.'); }
-      if (data.app !== 'social-hub' || data.version !== 1 || !Array.isArray(data.posts) || data.posts.length > H.limits.records) throw new Error('Use a Social Hub version 1 backup with up to 1,000 posts.');
+      if (data.app !== 'social-hub' || data.version !== 1 || !Array.isArray(data.posts) || data.posts.length > H.limits.records) throw new Error('Use a NextSocial or Social Hub version 1 backup with up to 1,000 posts.');
       const records = [], ids = new Set();
       for (const raw of data.posts) {
         H.validateRecord(raw);

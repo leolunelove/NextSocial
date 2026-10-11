@@ -7,7 +7,7 @@
       request.onupgradeneeded = () => request.result.createObjectStore('posts', { keyPath: 'id' });
       request.onsuccess = () => { db = request.result; db.onversionchange = () => db.close(); resolve(); };
       request.onerror = () => reject(request.error);
-      request.onblocked = () => reject(new Error('Close other Social Hub tabs, then reload.'));
+      request.onblocked = () => reject(new Error('Close other NextSocial tabs, then reload.'));
     });
   }
   function all() {
