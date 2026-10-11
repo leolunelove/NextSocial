@@ -13,3 +13,9 @@ The hosted app uses GitHub Pages. Its isolated approval service uses the existin
 `approval.mjs` implements the API, `supabase-bucket.mjs` provides atomic database storage, `supabase-edge.ts` is the function entrypoint, and `supabase-schema.sql` creates the isolated storage objects. No other application's tables are modified.
 
 Social feed previews approximate single-image posts. Automatic social publishing is not included.
+
+### Profile preview
+A quiet footer utility for trying a profile photo with an Instagram story ring
+and Notes bubble. Paste, upload or drop an image; adjust zoom and position.
+Photo and settings stay in a separate IndexedDB store on this device and are
+not uploaded or included in post backups.

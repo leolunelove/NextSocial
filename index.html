@@ -14,6 +14,7 @@
   <script src="storage.js" defer></script>
   <script src="app.js" defer></script>
   <script src="sharing.js" defer></script>
+  <script src="profile.js" defer></script>
 </head>
 <body>
   <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -55,7 +56,7 @@
       <section aria-labelledby="pending-heading"><div class="section-head"><h2 id="pending-heading"><span class="status-dot amber"></span>Pending <span class="count" id="pending-count">0</span></h2><span class="section-note">A second look before it goes out</span></div><div id="pending-list" class="post-list"></div></section>
       <section class="archive-section" aria-labelledby="posted-heading"><div class="section-head"><h2 id="posted-heading"><span class="status-dot gray"></span>Posted <span class="count" id="posted-count">0</span></h2><button id="archive-toggle" class="text-button" aria-expanded="false" aria-controls="posted-list">View archive <svg><use href="#i-arrow"/></svg></button></div><p id="archive-note" class="archive-note">Your finished posts will find a home here.</p><div id="posted-list" class="post-list" hidden></div></section>
     </main>
-    <footer><span class="local-note"><svg><use href="#i-lock"/></svg><span>Drafts stay on this device <span class="footer-dot">·</span> <span id="storage-state">Opening your workspace…</span></span></span><div class="backup-actions"><button id="export" class="text-button" disabled>Export backup</button><span>·</span><button id="import" class="text-button" disabled>Import backup</button></div></footer>
+    <footer><span class="local-note"><svg><use href="#i-lock"/></svg><span>Drafts stay on this device <span class="footer-dot">·</span> <span id="storage-state">Opening your workspace…</span></span></span><div class="backup-actions"><button id="profile-tool" class="text-button">Profile preview</button><span>·</span><button id="export" class="text-button" disabled>Export backup</button><span>·</span><button id="import" class="text-button" disabled>Import backup</button></div></footer>
     <p class="storage-help">Your browser keeps your posts. A backup keeps them safe if you clear browser data.</p>
   </div>
   <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
@@ -82,5 +83,22 @@
   <dialog id="confirm-dialog" class="small-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Delete this post?</h2><p>This removes the post and its image from this browser. Export a backup first if you want to keep a copy.</p><div class="confirm-actions"><button id="cancel-delete" class="secondary">Keep post</button><button id="confirm-delete" class="primary destructive">Delete post</button></div></dialog>
   <div id="toast" role="status" hidden></div>
   <noscript><p class="noscript">Please enable JavaScript to use your local workspace.</p></noscript>
+
+  <dialog id="profile-dialog" aria-labelledby="profile-heading">
+    <header class="dialog-header"><div><span class="eyebrow">A LITTLE EXTRA</span><h2 id="profile-heading">Your picture, in context.</h2></div><button id="profile-close" class="icon-button" aria-label="Close profile preview"><svg><use href="#i-close"/></svg></button></header>
+    <div class="profile-grid">
+      <div class="profile-preview"><div class="profile-instagram">Instagram <svg><use href="#i-instagram"/></svg></div>
+        <div class="profile-stage"><div id="profile-bubble" hidden>A little thought…</div><div class="profile-ring profile-large"><div class="profile-face"><img alt="Your profile picture" hidden><span>you</span></div></div><strong>your.name</strong><span class="profile-context">Profile picture</span></div>
+        <div class="profile-small-views"><div><div class="profile-ring profile-story-size"><div class="profile-face"><img alt="Story tray preview" hidden><span>you</span></div></div><span>Story tray</span></div><div><div class="profile-ring profile-feed-size"><div class="profile-face"><img alt="Feed avatar preview" hidden><span>you</span></div></div><span>In the feed</span></div></div>
+      </div>
+      <div class="profile-controls"><button id="profile-upload" class="secondary"><svg><use href="#i-image"/></svg>Choose a photo</button><p class="field-hint">Or paste with ⌘ V / Ctrl V, or drop an image here.</p>
+        <div class="profile-toggles"><label>Story ring<input id="profile-story" type="checkbox" role="switch"></label><label>Notes bubble<input id="profile-notes" type="checkbox" role="switch"></label></div>
+        <label id="profile-note-field" hidden>What’s your note?<input id="profile-note" maxlength="60" type="text" placeholder="A little thought…"></label>
+        <div class="profile-crop"><label for="profile-zoom">Zoom</label><input id="profile-zoom" type="range" min="1" max="3" step="0.01" value="1"><label for="profile-x">Horizontal position</label><input id="profile-x" type="range" min="0" max="100" value="50"><label for="profile-y">Vertical position</label><input id="profile-y" type="range" min="0" max="100" value="50"></div>
+        <button id="profile-remove" class="text-button" hidden>Remove photo</button><p class="profile-private">Just a preview. Your photo stays on this device.<br>Instagram’s appearance may vary.</p>
+      </div>
+    </div><input id="profile-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden>
+  </dialog>
+
 </body>
 </html>
