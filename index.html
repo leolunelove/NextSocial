@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f7f7f4">
+  <meta name="description" content="A small, private workspace for your next social post. Everything stays on your device.">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://social-hub-studio.leolunelove.chatgpt.site; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+  <title>Social Hub — Your personal content workspace</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+  <script src="core.js" defer></script>
+  <script src="storage.js" defer></script>
+  <script src="app.js" defer></script>
+  <script src="sharing.js" defer></script>
+</head>
+<body>
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 11h18"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    <symbol id="i-instagram" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6"/></symbol>
+    <symbol id="i-linkedin" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7m0-10v.1M11 17v-7m0 3c0-4 6-4 6 0v4"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M4 3h5l11 18h-5L4 3Zm0 18 6-8m4-2 6-8"/></symbol>
+    <symbol id="i-facebook" viewBox="0 0 24 24"><path d="M15 21V11h4l1-4h-5V5c0-2 1-3 4-2V0h-4c-3 0-5 2-5 5v2H7v4h3v10"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20 5c-3-3-6 0-8 2-2-2-5-5-8-2s-1 7 8 14c9-7 11-11 8-14Z"/></symbol>
+    <symbol id="i-comment" viewBox="0 0 24 24"><path d="M21 11a9 9 0 0 1-13 8l-5 2 2-5A9 9 0 1 1 21 11Z"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="m21 3-7 18-3-8-8-3L21 3ZM11 13 21 3"/></symbol>
+    <symbol id="i-bookmark" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4V3Z"/></symbol>
+    <symbol id="i-repeat" viewBox="0 0 24 24"><path d="M4 11V6h14m-4-4 4 4-4 4M20 13v5H6m4-4-4 4 4 4"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3m-4 5v2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 17v4h16v-4"/></symbol>
+  </defs></svg>
+  <div class="workspace">
+    <header class="topbar">
+      <a class="wordmark" href="./index.html" aria-label="Social Hub home"><img src="icon.svg" alt="" width="30" height="30">Social Hub</a>
+      <button class="primary" id="add" disabled><svg><use href="#i-plus"/></svg>Add <span class="desktop-label">content</span></button>
+    </header>
+    <main>
+      <div class="intro">
+        <div><p class="eyebrow">YOUR CONTENT</p><h1>A home for your next post.</h1><p class="subtitle">Paste your content. Add the details.<br>Send it for a second pair of eyes.</p></div>
+        <div class="today" title="Approved posts planned for today"><span class="today-icon"><svg><use href="#i-calendar"/></svg></span><div><span class="today-title">Today</span><span id="today-count">0 posts ready</span></div><span class="today-number" id="today-number">0</span></div>
+      </div>
+      <div id="error-banner" role="alert" hidden></div>
+      <button class="dropzone" id="dropzone" disabled>
+        <span class="drop-icon"><svg><use href="#i-image"/></svg><span>+</span></span>
+        <span><strong>Start with an image.</strong><span class="drop-subtitle">Drop it here, choose a file, or paste <kbd id="paste-shortcut">⌘ V</kbd></span></span>
+        <span class="drop-arrow"><svg><use href="#i-arrow"/></svg></span>
+      </button>
+      <section aria-labelledby="up-next-heading"><div class="section-head"><h2 id="up-next-heading"><span class="status-dot green"></span>Up next <span class="count" id="approved-count">0</span></h2><span class="section-note">Ready when you are</span></div><div id="approved-list" class="post-list"></div></section>
+      <section aria-labelledby="pending-heading"><div class="section-head"><h2 id="pending-heading"><span class="status-dot amber"></span>Pending <span class="count" id="pending-count">0</span></h2><span class="section-note">A second look before it goes out</span></div><div id="pending-list" class="post-list"></div></section>
+      <section class="archive-section" aria-labelledby="posted-heading"><div class="section-head"><h2 id="posted-heading"><span class="status-dot gray"></span>Posted <span class="count" id="posted-count">0</span></h2><button id="archive-toggle" class="text-button" aria-expanded="false" aria-controls="posted-list">View archive <svg><use href="#i-arrow"/></svg></button></div><p id="archive-note" class="archive-note">Your finished posts will find a home here.</p><div id="posted-list" class="post-list" hidden></div></section>
+    </main>
+    <footer><span class="local-note"><svg><use href="#i-lock"/></svg><span>Drafts stay on this device <span class="footer-dot">·</span> <span id="storage-state">Opening your workspace…</span></span></span><div class="backup-actions"><button id="export" class="text-button" disabled>Export backup</button><span>·</span><button id="import" class="text-button" disabled>Import backup</button></div></footer>
+    <p class="storage-help">Your browser keeps your posts. A backup keeps them safe if you clear browser data.</p>
+  </div>
+  <input type="file" id="file-input" accept="image/png,image/jpeg,image/webp,image/gif" multiple hidden>
+  <input type="file" id="import-input" accept="application/json,.json" hidden>
+  <div class="drop-overlay" id="drop-overlay" hidden><svg><use href="#i-image"/></svg><h2>A new idea? Drop it here.</h2><p>Each image becomes its own post.</p></div>
+  <dialog id="editor" aria-labelledby="editor-heading">
+    <div class="dialog-header"><div><span class="eyebrow">THE DETAILS</span><h2 id="editor-heading">A little context goes a long way.</h2></div><button id="close-editor" class="icon-button" aria-label="Close preview"><svg><use href="#i-close"/></svg></button></div>
+    <div class="editor-grid">
+      <div class="preview-pane"><div id="preview-tabs" class="preview-tabs" role="tablist" aria-label="Preview platform"></div><div id="mockup" role="tabpanel" aria-label="Social post preview"></div><p id="crop-note" class="preview-note"></p><p class="preview-disclaimer">Feed preview · Layouts can vary by device.</p></div>
+      <div class="details-pane"><div class="detail-top"><span id="editor-status" class="status-badge"></span><span id="save-state" role="status">Saved on this device</span></div>
+        <label for="post-title">Post title</label><input id="post-title" maxlength="200" placeholder="Give this idea a name" autocomplete="off">
+        <fieldset id="platform-field"><legend>Posting to</legend><div id="platform-choices" class="platform-choices"></div></fieldset>
+        <p id="suggestion" class="field-hint"></p>
+        <label for="post-caption">Caption <span class="label-note">optional</span></label><textarea id="post-caption" maxlength="20000" rows="5" placeholder="What would you like to say?"></textarea><div class="caption-meta"><span id="caption-warning"></span><span id="caption-count">0 characters</span></div>
+        <label for="post-date">Planned date <span class="label-note">optional</span></label><input id="post-date" type="date" min="0001-01-01" max="9999-12-31"><p id="date-note" class="field-hint">No rush. Leave it open, or pick a day.</p>
+        <div class="image-details"><svg><use href="#i-image"/></svg><span id="image-metadata"></span><button class="text-button" id="download-image" aria-label="Download original image"><svg><use href="#i-download"/></svg></button></div>
+        <div id="share-info" hidden></div>
+        <div class="editor-actions"><button class="primary" id="editor-action">Create approval link</button><button class="secondary" id="copy-caption">Copy caption</button></div>
+        <p id="share-explainer" class="field-hint">Only this post is uploaded when you create a link. Anyone with the link can review it for 7 days.</p>
+        <div class="editor-bottom"><button id="self-approve" class="text-button">Approve myself</button><button id="secondary-action" class="text-button" hidden>Move to Pending</button><button id="revoke-link" class="text-button" hidden>Edit & replace link</button><button id="delete-post" class="text-button danger">Delete post</button></div>
+      </div>
+    </div>
+  </dialog>
+  <dialog id="confirm-dialog" class="small-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Delete this post?</h2><p>This removes the post and its image from this browser. Export a backup first if you want to keep a copy.</p><div class="confirm-actions"><button id="cancel-delete" class="secondary">Keep post</button><button id="confirm-delete" class="primary destructive">Delete post</button></div></dialog>
+  <div id="toast" role="status" hidden></div>
+  <noscript><p class="noscript">Please enable JavaScript to use your local workspace.</p></noscript>
+</body>
+</html>
