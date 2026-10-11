@@ -3,7 +3,7 @@
   if (location.hash.startsWith('#review')) return;
   const $ = id => document.getElementById(id);
   const dialog = $('profile-dialog');
-  let db, photoUrl, state = {photo:null,zoom:1,x:50,y:50,story:false,notes:false,note:'A little thought…'}, saveChain=Promise.resolve();
+  let db, photoUrl, renderedPhoto, saveTimer, state = {photo:null,zoom:1,x:50,y:50,story:false,notes:false,note:'A little thought…'}, saveChain=Promise.resolve();
   const opened = new Promise((resolve,reject) => {
     const r=indexedDB.open('social-hub-profile',1);
     r.onupgradeneeded=()=>r.result.createObjectStore('settings');
@@ -11,13 +11,21 @@
     r.onsuccess=()=>{db=r.result;db.onversionchange=()=>db.close();const tx=db.transaction('settings');const q=tx.objectStore('settings').get('preview');q.onsuccess=()=>{if(q.result)state={...state,...q.result};resolve();};q.onerror=()=>reject(q.error);};
   });
   function save() {
+    clearTimeout(saveTimer);
+    saveTimer=setTimeout(persist,180);
+  }
+  function persist() {
+    clearTimeout(saveTimer);
     const snapshot={...state};
     saveChain=saveChain.catch(()=>{}).then(()=>opened).then(()=>new Promise((resolve,reject)=>{const tx=db.transaction('settings','readwrite');tx.objectStore('settings').put(snapshot,'preview');tx.oncomplete=resolve;tx.onerror=()=>reject(tx.error);tx.onabort=()=>reject(tx.error);}));
     saveChain.catch(window.HubApp.report);
   }
   function render() {
-    if(photoUrl)URL.revokeObjectURL(photoUrl);
-    photoUrl=state.photo?URL.createObjectURL(state.photo):null;
+    if(renderedPhoto!==state.photo){
+      if(photoUrl)URL.revokeObjectURL(photoUrl);
+      photoUrl=state.photo?URL.createObjectURL(state.photo):null;
+      renderedPhoto=state.photo;
+    }
     for(const face of dialog.querySelectorAll('.profile-face')){
       const img=face.querySelector('img');img.hidden=!photoUrl;if(photoUrl)img.src=photoUrl;else img.removeAttribute('src');
       img.style.objectPosition=`${state.x}% ${state.y}%`;img.style.transform=`translate(${(50-state.x)*(state.zoom-1)}%, ${(50-state.y)*(state.zoom-1)}%) scale(${state.zoom})`;
@@ -37,9 +45,10 @@
     try {const img=new Image();img.src=url;await img.decode();if(img.naturalWidth*img.naturalHeight>100000000)throw new Error('This photo is too large. Choose a smaller image.');}finally{URL.revokeObjectURL(url);}
     state={...state,photo:file,zoom:1,x:50,y:50};render();save();
   }
-  $('profile-tool').addEventListener('click',async()=>{try{await opened;render();dialog.showModal();document.body.classList.add('modal-open');}catch(e){window.HubApp.report(e);}});
+  $('profile-tool').addEventListener('click',async()=>{try{await opened;render();dialog.showModal();dialog.scrollTop=0;$('profile-controls').scrollTop=0;document.body.classList.add('modal-open');}catch(e){window.HubApp.report(e);}});
   $('profile-close').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('close',()=>document.body.classList.remove('modal-open'));
+  dialog.addEventListener('close',()=>{persist();document.body.classList.remove('modal-open');});
+  document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveTimer)persist();});
   $('profile-upload').addEventListener('click',()=>$('profile-file').click());
   $('profile-file').addEventListener('change',e=>{load(e.target.files[0]).catch(window.HubApp.report);e.target.value='';});
   for(const key of ['zoom','x','y'])$('profile-'+key).addEventListener('input',e=>{state[key]=Number(e.target.value);render();save();});
