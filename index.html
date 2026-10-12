@@ -9,10 +9,10 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://qbkrqibmolaetilruxki.supabase.co; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <title>NextSocial — Your personal content workspace</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=compact-20261012">
   <script src="core.js" defer></script>
   <script src="storage.js" defer></script>
-  <script src="app.js" defer></script>
+  <script src="app.js?v=compact-20261012" defer></script>
   <script src="sharing.js" defer></script>
   <script src="profile.js" defer></script>
 </head>
@@ -80,6 +80,7 @@
         <div class="editor-bottom"><button id="self-approve" class="text-button">Approve myself</button><button id="secondary-action" class="text-button" hidden>Move to Pending</button><button id="revoke-link" class="text-button" hidden>Edit & replace link</button><button id="delete-post" class="text-button danger">Delete post</button></div>
       </div>
     </div>
+    <div id="editor-dock" class="editor-dock" role="group" aria-label="Post actions"></div>
   </dialog>
   <dialog id="confirm-dialog" class="small-dialog" aria-labelledby="confirm-title"><h2 id="confirm-title">Delete this post?</h2><p>This removes the post and its image from this browser. Export a backup first if you want to keep a copy.</p><div class="confirm-actions"><button id="cancel-delete" class="secondary">Keep post</button><button id="confirm-delete" class="primary destructive">Delete post</button></div></dialog>
   <div id="toast" role="status" hidden></div>

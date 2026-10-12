@@ -89,6 +89,14 @@
     // Keep the image and preview tabs visible on opening, including on mobile.
     $('close-editor').focus({preventScroll:true}); $('editor').scrollTop = 0;
   }
+  const mobileEditor = window.matchMedia('(max-width:650px)');
+  const editorActions = document.querySelector('.editor-actions');
+  function positionEditorActions() {
+    if(mobileEditor.matches) $('editor-dock').append(editorActions);
+    else $('editor-details-pane').insertBefore(editorActions,$('share-explainer'));
+  }
+  mobileEditor.addEventListener('change',positionEditorActions);
+  positionEditorActions();
   function setEditorView(view) {
     $('editor').dataset.view=view;
     $('editor').querySelector('.editor-grid').scrollTop=0;

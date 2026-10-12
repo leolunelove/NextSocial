@@ -85,3 +85,27 @@ kbd{color:#586d89}
 .profile-crop label,.profile-private,.profile-context,.profile-small-views>div>span{color:#586d89}
 .profile-face{color:#586d89}
 @media(max-width:650px){.storage-help{font-size:11px;line-height:1.7}.empty-state p{font-size:11px}.drop-subtitle{font-size:11px}.field-hint,.preview-note,.preview-disclaimer,.profile-private,.caption-meta{font-size:11px;line-height:1.7}.profile-context,.profile-small-views>div>span{font-size:10px}.backup-actions .text-button,.local-note{font-size:11px}.row-status{font-size:11px}.section-head h2{font-size:11px}.intro .eyebrow{font-size:10px}}
+/* A compact mobile editor with its primary action always within reach. */
+.editor-dock{display:none}
+@media(max-width:650px){
+ #editor .dialog-header{padding:15px 20px 12px}#editor .dialog-header .eyebrow{font-size:8px;margin-bottom:5px}#editor .dialog-header h2{font-size:21px}
+ #editor .editor-mobile-tabs{padding:7px 20px 10px}#editor .editor-mobile-tabs button{min-height:38px}
+ #editor .editor-grid .details-pane{padding:16px 20px 18px}
+ #editor .detail-top{margin-bottom:16px}
+ #editor .details-pane label,#editor .details-pane legend{margin-bottom:7px}
+ #editor .details-pane input{padding:10px 12px;min-height:43px}
+ #editor .details-pane textarea{padding:10px 12px;height:100px;min-height:84px;line-height:1.5;resize:vertical}
+ #editor .details-pane fieldset{margin-top:16px;margin-bottom:0}
+ #editor .platform-choices{gap:5px}#editor .platform-choice{min-height:36px;padding:7px 9px}
+ #editor #suggestion{margin:7px 0 15px;font-size:10px;line-height:1.5}
+ #editor .caption-meta{margin:5px 0 13px;font-size:10px}
+ #editor #date-note{margin:7px 0 12px;line-height:1.5;font-size:10px}
+ #editor .image-details{margin-top:0;padding:8px 0}
+ #editor #share-explainer{margin:10px 0 0;font-size:10px;line-height:1.6}
+ #editor #share-info{padding:12px;margin:12px 0}#editor #share-info p{margin:6px 0}
+ #editor .editor-bottom{margin-top:5px;gap:9px}#editor .editor-bottom .text-button{min-height:38px;font-size:10px}
+ #editor .editor-dock{display:block;flex-shrink:0;padding:10px 20px calc(10px + env(safe-area-inset-bottom));border-top:1px solid #dce4ee;background:#fafcff;box-shadow:0 -5px 18px #293d6306}
+ #editor .editor-dock .editor-actions{display:flex;margin:0;gap:8px}
+ #editor .editor-dock .primary{flex:1;width:auto;min-height:46px}
+ #editor .editor-dock #copy-caption{flex-shrink:0;min-height:46px}
+}
