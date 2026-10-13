@@ -109,3 +109,13 @@ kbd{color:#586d89}
  #editor .editor-dock .primary{flex:1;width:auto;min-height:46px}
  #editor .editor-dock #copy-caption{flex-shrink:0;min-height:46px}
 }
+
+/* Clear Sky approval page */
+.review-extras{margin:20px 0;border:1px solid #d4dfef;border-radius:14px;padding:0 16px;background:#fafcff}
+.review-extras summary{cursor:pointer;padding:15px 0;font-size:13px;color:#536782;min-height:48px}
+.review-extras[open]{padding-bottom:16px}.review-extras label:first-of-type{margin-top:4px}.review-extras textarea{min-height:90px}
+@media(max-width:650px){
+.review-page{padding:0 20px 28px}.review-header{height:70px;border-bottom:1px solid #dfe7f3}.review-content{padding-top:22px}.review-content>.eyebrow{font-size:9px;margin-bottom:10px}.review-content h1{font-size:28px;letter-spacing:-1px;line-height:1.18}.review-content>.subtitle{margin-top:10px;font-size:13px}.review-grid{gap:18px;margin-top:22px}.review-preview .social-card{margin:auto}.review-preview .preview-note{margin:10px 0 0;font-size:11px}.review-response h2{font-size:22px;margin:0}.review-copy{font-size:13px;line-height:1.6;margin:9px 0 14px}.review-extras{margin:14px 0}.review-response .field-hint{font-size:11px;line-height:1.6;margin-top:12px}
+.review-awaiting{padding-bottom:calc(100px + env(safe-area-inset-bottom))}.review-awaiting .review-actions{position:fixed;bottom:0;left:0;right:0;z-index:10;margin:0;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:#fafcff;border-top:1px solid #dce4ee;box-shadow:0 -5px 18px #293d6308;flex-wrap:nowrap;gap:8px}.review-actions button{min-height:48px;font-size:13px;border-radius:12px}.review-actions .primary{flex:1.2}.review-actions .secondary{flex:1}}
+
+.review-avatar{background:#e5edfc;color:#5576af}.review-preview .social-card{border:1px solid #dce5f1;box-shadow:0 8px 28px #293d6308}.review-preview .social-head{padding:14px 16px}.review-preview .social-sub{color:#586d89}.review-preview .social-caption{font-size:13px;line-height:1.65}.review-preview .social-tools{color:#536782}.review-response h2{color:#293f60}
