@@ -138,20 +138,24 @@
     try{
       const p=await request('/api/review',secret);draw(p);
     }catch(e){content.replaceChildren(A.el('p','eyebrow','NEXTSOCIAL'),A.el('h1','','This review is unavailable.'),A.el('p','subtitle',e.message));}
-    function draw(p){
+    function draw(p,justResponded=false){
       page.classList.remove('review-awaiting');
       content.replaceChildren(A.el('p','eyebrow','SENT FOR YOUR REVIEW'),A.el('h1','',p.title||'A post for your review.'),A.el('p','subtitle',`${p.platform} · ${H.dateLabel(p.plannedDate)}`));
       const grid=A.el('div','review-grid'),preview=A.el('div','review-preview'),form=A.el('div','review-response');
-      const card=A.el('div','social-card '+({Instagram:'instagram',LinkedIn:'linkedin',X:'x',Facebook:'facebook'}[p.platform]));
-      const socialHead=A.el('div','social-head'),who=A.el('div');who.append(A.el('div','social-name','Post preview'),A.el('div','social-sub',p.platform));const reviewAvatar=A.el('div','avatar review-avatar');reviewAvatar.append(A.icon('image'));socialHead.append(reviewAvatar,who,A.el('span','social-menu','···'));
-      const media=A.el('div','social-media');media.style.aspectRatio=H.previewRatio(p.platform,p.width,p.height);const img=A.el('img');img.src=p.image;img.alt=p.title||'Image awaiting approval';media.append(img);
-      const caption=A.el('p','social-caption',p.caption),tools=A.el('div','social-tools');tools.setAttribute('aria-hidden','true');tools.append(A.icon('heart'),A.icon('comment'),A.icon('send'));
-      if(p.platform==='Instagram')card.append(socialHead,media,tools,caption);else card.append(socialHead,caption,media,tools);
+      const card=A.postPreview(p,p.platform,p.image);
       preview.append(card,A.el('p','preview-note','Feed preview · Your feedback applies to this version.'));grid.append(preview,form);content.append(grid);
       if(p.decision!=='pending'){
-        form.append(A.el('p','eyebrow','RESPONSE RECEIVED'),A.el('h2','',p.decision==='approved'?'Good to go.':'A little feedback goes a long way.'),A.el('p','subtitle',p.decision==='approved'?'Your approval is saved. The sender can see it in their workspace.':'Your change request is saved. The sender can see your note.'));
-        if(p.feedback)form.append(A.el('blockquote','review-feedback',p.feedback));form.append(A.el('p','field-hint','This response is complete. Ask the sender for a fresh link if anything changes.'));return;
+        page.classList.add('review-complete');
+        const confirmation=A.el('section','review-confirmation');confirmation.setAttribute('aria-label','Review response');
+        const heading=A.el('h2','',p.decision==='approved'?'Post approved.':'Changes requested.');heading.tabIndex=-1;
+        const mark=A.el('div','review-confirmation-mark');mark.setAttribute('aria-hidden','true');mark.append(A.icon(p.decision==='approved'?'check':'comment'));
+        confirmation.append(mark,A.el('p','eyebrow','RESPONSE SAVED'),heading,A.el('p','',p.decision==='approved'?'You’re all done. The sender can see your approval.':'You’re all done. Your feedback has been sent to the sender.'));
+        if(p.feedback)confirmation.append(A.el('blockquote','review-feedback',p.feedback));
+        content.insertBefore(confirmation,grid);form.hidden=true;
+        if(justResponded){heading.focus({preventScroll:true});confirmation.scrollIntoView({block:'start',behavior:'instant'});}
+        return;
       }
+      page.classList.remove('review-complete');
       form.append(A.el('h2','','Ready to post?'),A.el('p','review-copy','Check the post above, then approve it or ask for a change.'));
       const nameLabel=A.el('label','','Your name');nameLabel.htmlFor='review-name';const name=A.el('input');name.id='review-name';name.maxLength=100;name.placeholder='Optional';name.autocomplete='name';
       const noteLabel=A.el('label','','A note for the sender');noteLabel.htmlFor='review-note';const note=A.el('textarea');note.id='review-note';note.rows=4;note.maxLength=2000;note.placeholder='Anything you’d like to change?';
@@ -164,7 +168,7 @@
       async function respond(decision){
         error.textContent='';if(decision==='changes'&&!note.value.trim()){extras.open=true;error.textContent='Leave a short note so the sender knows what to change, then tap Request changes.';note.focus();return;}
         approve.disabled=changes.disabled=true;approve.textContent=decision==='approved'?'Saving approval…':'Approve post';changes.textContent=decision==='changes'?'Sending…':'Request changes';
-        try{const result=await request('/api/review',secret,'POST',{decision,reviewer:name.value,feedback:note.value});draw({...p,...result});}
+        try{const result=await request('/api/review',secret,'POST',{decision,reviewer:name.value,feedback:note.value});draw({...p,...result},true);}
         catch(e){error.textContent=e.message;approve.disabled=changes.disabled=false;approve.textContent='Approve post';changes.textContent='Request changes';}
       }
     }

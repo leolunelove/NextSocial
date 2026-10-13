@@ -140,18 +140,16 @@
     }
     $('mockup').setAttribute('aria-labelledby','preview-' + previewPlatform.toLowerCase());
   }
-  function renderMockup() {
-    const p = current(); if (!p) return;
-    const platform = previewPlatform, card = el('div','social-card ' + icons[platform]);
+  function postPreview(p,platform,source) {
+    const card=el('div','social-card '+icons[platform]);
     const head = el('div','social-head'), who = el('div');
-    who.append(el('div','social-name',platform === 'Instagram' ? 'your.brand' : 'Your brand'));
-    who.append(el('div','social-sub',platform === 'X' ? '@yourbrand · now' : platform === 'LinkedIn' ? 'Your community · Just now · ◉' : platform === 'Facebook' ? 'Just now · ◉' : 'Original post'));
-    head.append(el('div','avatar','Y'),who,el('span','social-menu','···'));
+    who.append(el('div','social-name','Post preview'));
+    who.append(el('div','social-sub',platform));
+    const avatar=el('div','avatar review-avatar');avatar.append(icon('image'));head.append(avatar,who,el('span','social-menu','···'));
     const media = el('div','social-media'), ratio = H.previewRatio(platform,p.width,p.height);
-    media.style.aspectRatio = String(ratio); const img = el('img'); img.src = imageURL(p); img.alt = p.title || 'Your post image'; media.append(img);
+    media.style.aspectRatio = String(ratio); const img = el('img'); img.src = source; img.alt = p.title || 'Your post image'; media.append(img);
     const caption = el('p','social-caption');
     if (p.caption) {
-      if (platform === 'Instagram') caption.append(el('span','caption-name','your.brand '));
       caption.append(document.createTextNode(p.caption));
     }
     const tools = el('div','social-tools'); tools.setAttribute('aria-hidden','true');
@@ -160,7 +158,12 @@
     else for (const [text,name] of [['Like','heart'],['Comment','comment'],[platform === 'LinkedIn' ? 'Repost' : 'Share','repeat']]) { const s = el('span'); s.append(icon(name),document.createTextNode(text)); tools.append(s); }
     if (platform === 'Instagram') card.append(head,media,tools,caption,el('div','social-bottom','JUST NOW'));
     else card.append(head,caption,media,tools);
-    $('mockup').replaceChildren(card);
+    return card;
+  }
+  function renderMockup() {
+    const p=current(); if(!p)return;
+    const platform=previewPlatform,ratio=H.previewRatio(platform,p.width,p.height);
+    $('mockup').replaceChildren(postPreview(p,platform,imageURL(p)));
     const cropped = Math.abs(ratio - p.width/p.height) > .001;
     $('crop-note').textContent = cropped ? 'This feed preview crops the edges to fit. Your original image stays untouched.' : `${H.ratioLabel(p.width,p.height)} · Full image, original proportions.`;
     captionMeta();
@@ -310,7 +313,7 @@
   channel?.addEventListener('message',() => { if (!$('editor').open && !busy) refresh().catch(report); });
   setInterval(() => { if (ready && !document.hidden) render(); },60000);
   if (!/Mac|iPhone|iPad/.test(navigator.platform)) $('paste-shortcut').textContent = 'Ctrl V';
-  window.HubApp = { current, all:()=>posts, refresh, fillEditor, closeEditor, flushSave, move, renderMockup, report, toast, notify, openEditor, render, icon, el, button, isReady:()=>ready, isBusy:()=>busy || Object.keys(dirty).length>0 || (selectedId && $('save-state').textContent==='Saving…'), setBusy:value=>{busy=value;} };
+  window.HubApp = { current, all:()=>posts, refresh, fillEditor, closeEditor, flushSave, move, renderMockup, postPreview, report, toast, notify, openEditor, render, icon, el, button, isReady:()=>ready, isBusy:()=>busy || Object.keys(dirty).length>0 || (selectedId && $('save-state').textContent==='Saving…'), setBusy:value=>{busy=value;} };
   if (new URLSearchParams(location.hash.slice(1)).has('review')) return;
   (async () => {
     try { await store.open(); await refresh(); ready = true; for (const id of ['add','dropzone','export','import']) $(id).disabled = false; }

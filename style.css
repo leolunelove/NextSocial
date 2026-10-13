@@ -138,3 +138,9 @@ kbd{color:#586d89}
  #editor .preview-pane .preview-tabs{max-width:280px;margin-inline:auto}
  #editor .preview-pane .preview-note,#editor .preview-pane .preview-disclaimer{max-width:280px;margin-inline:auto}
 }
+
+.review-confirmation{margin-top:26px;padding:25px;border:1px solid #cbdaf0;background:#eaf1fc;border-radius:18px;color:#293f60;scroll-margin-top:20px}
+.review-confirmation-mark{display:flex;align-items:center;justify-content:center;width:40px;height:40px;background:#d7e5fb;color:#3b66ce;border-radius:50%;margin-bottom:16px}.review-confirmation-mark svg{width:22px;height:22px}
+.review-confirmation .eyebrow{margin-bottom:9px;color:#536782;font-size:9px}.review-confirmation h2{margin:0 0 10px;font-size:28px;letter-spacing:-.8px}.review-confirmation>p:last-of-type{margin:0;font-size:14px;line-height:1.6}.review-confirmation h2:focus{outline:none}
+.review-complete .review-grid{grid-template-columns:1fr;margin-top:26px}.review-complete .review-preview .social-card{margin-inline:auto}
+@media(max-width:650px){.review-confirmation{padding:20px;margin-top:20px}.review-confirmation h2{font-size:25px}.review-confirmation>p:last-of-type{font-size:13px}.review-complete .review-grid{margin-top:20px}}
