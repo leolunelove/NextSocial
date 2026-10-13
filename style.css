@@ -128,3 +128,13 @@ kbd{color:#586d89}
  .review-preview .social-tools{padding:10px 13px 0}
  .review-preview .preview-note{max-width:280px;margin:10px auto 0}
 }
+
+/* Match compact review cards in the mobile editor. */
+@media(max-width:650px){
+ #editor .preview-pane .social-card{width:100%;max-width:280px;margin-inline:auto}
+ #editor .preview-pane .social-head{padding:11px 13px}
+ #editor .preview-pane .social-caption{padding:0 13px 13px;margin-top:8px;font-size:13px;line-height:1.55}
+ #editor .preview-pane .social-tools{padding:10px 13px 0}
+ #editor .preview-pane .preview-tabs{max-width:280px;margin-inline:auto}
+ #editor .preview-pane .preview-note,#editor .preview-pane .preview-disclaimer{max-width:280px;margin-inline:auto}
+}
