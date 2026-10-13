@@ -119,3 +119,12 @@ kbd{color:#586d89}
 .review-awaiting{padding-bottom:calc(100px + env(safe-area-inset-bottom))}.review-awaiting .review-actions{position:fixed;bottom:0;left:0;right:0;z-index:10;margin:0;padding:12px 20px calc(12px + env(safe-area-inset-bottom));background:#fafcff;border-top:1px solid #dce4ee;box-shadow:0 -5px 18px #293d6308;flex-wrap:nowrap;gap:8px}.review-actions button{min-height:48px;font-size:13px;border-radius:12px}.review-actions .primary{flex:1.2}.review-actions .secondary{flex:1}}
 
 .review-avatar{background:#e5edfc;color:#5576af}.review-preview .social-card{border:1px solid #dce5f1;box-shadow:0 8px 28px #293d6308}.review-preview .social-head{padding:14px 16px}.review-preview .social-sub{color:#586d89}.review-preview .social-caption{font-size:13px;line-height:1.65}.review-preview .social-tools{color:#536782}.review-response h2{color:#293f60}
+
+/* Smaller mobile feed card; media keeps its platform aspect ratio. */
+@media(max-width:650px){
+ .review-preview .social-card{width:100%;max-width:280px;margin-inline:auto}
+ .review-preview .social-head{padding:11px 13px}
+ .review-preview .social-caption{padding:0 13px 13px;margin-top:8px;line-height:1.55}
+ .review-preview .social-tools{padding:10px 13px 0}
+ .review-preview .preview-note{max-width:280px;margin:10px auto 0}
+}
