@@ -146,3 +146,17 @@ kbd{color:#586d89}
 @media(max-width:650px){.review-confirmation{padding:20px;margin-top:20px}.review-confirmation h2{font-size:25px}.review-confirmation>p:last-of-type{font-size:13px}.review-complete .review-grid{margin-top:20px}}
 
 @media(max-width:650px){.review-awaiting .review-actions{bottom:var(--review-keyboard,0px)}.review-extras input,.review-extras textarea{scroll-margin-top:20px;scroll-margin-bottom:110px}.review-error{scroll-margin-bottom:110px}}
+
+/* Compact feedback, with comfortable mobile inputs. */
+@media(max-width:650px){
+ .review-response .review-copy{margin:7px 0 10px;font-size:13px;line-height:1.5}
+ .review-response .review-extras{margin:10px 0;border-radius:12px;padding-inline:14px}
+ .review-extras summary{padding:12px 0;min-height:44px;font-size:12px}
+ .review-extras[open]{padding-bottom:14px}
+ .review-response .review-extras label{margin:12px 0 6px;font-size:12px}
+ .review-response .review-extras label:first-of-type{margin-top:0}
+ .review-response .review-extras input{min-height:44px;padding:8px 11px;line-height:1.5;border-radius:10px}
+ .review-response .review-extras textarea{height:96px;min-height:80px;padding:9px 11px;line-height:1.5;border-radius:10px;resize:vertical}
+ .review-response .review-error{margin:8px 0;font-size:12px;line-height:1.5}
+ .review-response>.field-hint{margin-top:8px;font-size:11px;line-height:1.5}
+}
