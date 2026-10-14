@@ -144,3 +144,5 @@ kbd{color:#586d89}
 .review-confirmation .eyebrow{margin-bottom:9px;color:#536782;font-size:9px}.review-confirmation h2{margin:0 0 10px;font-size:28px;letter-spacing:-.8px}.review-confirmation>p:last-of-type{margin:0;font-size:14px;line-height:1.6}.review-confirmation h2:focus{outline:none}
 .review-complete .review-grid{grid-template-columns:1fr;margin-top:26px}.review-complete .review-preview .social-card{margin-inline:auto}
 @media(max-width:650px){.review-confirmation{padding:20px;margin-top:20px}.review-confirmation h2{font-size:25px}.review-confirmation>p:last-of-type{font-size:13px}.review-complete .review-grid{margin-top:20px}}
+
+@media(max-width:650px){.review-awaiting .review-actions{bottom:var(--review-keyboard,0px)}.review-extras input,.review-extras textarea{scroll-margin-top:20px;scroll-margin-bottom:110px}.review-error{scroll-margin-bottom:110px}}

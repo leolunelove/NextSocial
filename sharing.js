@@ -132,18 +132,22 @@
   async function reviewPage(secret){
     document.querySelector('.workspace').hidden=true;document.title='A post for your review — NextSocial';
     const page=A.el('main','review-page');document.body.append(page);
+    const viewport=window.visualViewport;
+    const fitKeyboard=()=>{const offset=viewport?Math.max(0,window.innerHeight-viewport.height-viewport.offsetTop):0;page.style.setProperty('--review-keyboard',offset+'px');};
+    viewport?.addEventListener('resize',fitKeyboard);viewport?.addEventListener('scroll',fitKeyboard);fitKeyboard();
     const head=A.el('header','review-header'),brand=A.el('a','wordmark','NextSocial');brand.href=location.pathname;head.append(brand,A.el('span','review-topnote','A SECOND PAIR OF EYES'));page.append(head);
     const content=A.el('div','review-content');content.append(A.el('p','eyebrow','SENT FOR YOUR REVIEW'),A.el('h1','','One moment.'));page.append(content);
     if(!TOKEN.test(secret)){content.replaceChildren(A.el('h1','','This link isn’t quite right.'),A.el('p','subtitle','Ask the sender for a new approval link.'));return;}
     try{
       const p=await request('/api/review',secret);draw(p);
-    }catch(e){content.replaceChildren(A.el('p','eyebrow','NEXTSOCIAL'),A.el('h1','','This review is unavailable.'),A.el('p','subtitle',e.message));}
+    }catch(e){content.replaceChildren(A.el('p','eyebrow','NEXTSOCIAL'),A.el('h1','',e.status===410?'This link has expired.':'This review is unavailable.'),A.el('p','subtitle',e.status===410?'Ask the sender for a fresh approval link. Your post has not been approved.':e.message));}
     function draw(p,justResponded=false){
       page.classList.remove('review-awaiting');
       content.replaceChildren(A.el('p','eyebrow','SENT FOR YOUR REVIEW'),A.el('h1','',p.title||'A post for your review.'),A.el('p','subtitle',`${p.platform} · ${H.dateLabel(p.plannedDate)}`));
       const grid=A.el('div','review-grid'),preview=A.el('div','review-preview'),form=A.el('div','review-response');
       const card=A.postPreview(p,p.platform,p.image);
-      preview.append(card,A.el('p','preview-note','Feed preview · Your feedback applies to this version.'));grid.append(preview,form);content.append(grid);
+      const cropped=Math.abs(H.previewRatio(p.platform,p.width,p.height)-p.width/p.height)>.001;
+      preview.append(card,A.el('p','preview-note',cropped?'Feed preview crops the edges to fit this platform. Your feedback applies to this version.':'Feed preview · Full image, original proportions.'));grid.append(preview,form);content.append(grid);
       if(p.decision!=='pending'){
         page.classList.add('review-complete');
         const confirmation=A.el('section','review-confirmation');confirmation.setAttribute('aria-label','Review response');
@@ -169,7 +173,7 @@
         error.textContent='';if(decision==='changes'&&!note.value.trim()){extras.open=true;error.textContent='Leave a short note so the sender knows what to change, then tap Request changes.';note.focus();return;}
         approve.disabled=changes.disabled=true;approve.textContent=decision==='approved'?'Saving approval…':'Approve post';changes.textContent=decision==='changes'?'Sending…':'Request changes';
         try{const result=await request('/api/review',secret,'POST',{decision,reviewer:name.value,feedback:note.value});draw({...p,...result},true);}
-        catch(e){error.textContent=e.message;approve.disabled=changes.disabled=false;approve.textContent='Approve post';changes.textContent='Request changes';}
+        catch(e){error.textContent=e.message;if(e.status===410){page.classList.remove('review-awaiting');actions.remove();error.textContent='This link has expired. Ask the sender for a fresh approval link. Your response was not saved.';}else{approve.disabled=changes.disabled=false;approve.textContent='Approve post';changes.textContent='Request changes';}error.tabIndex=-1;error.focus();error.scrollIntoView({block:'center'});}
       }
     }
   }
