@@ -160,3 +160,33 @@ kbd{color:#586d89}
  .review-response .review-error{margin:8px 0;font-size:12px;line-height:1.5}
  .review-response>.field-hint{margin-top:8px;font-size:11px;line-height:1.5}
 }
+
+/* Clear Sky hierarchy: content first, one primary decision. */
+.review-content>h1{font-weight:650;color:#263b5c;letter-spacing:-1.2px}
+.review-content>.eyebrow{color:#586d89;font-weight:500}
+.review-response h2{font-size:20px;font-weight:600;letter-spacing:-.5px}
+.review-response .review-copy{color:#536782}
+.review-extras{background:transparent;border:0;border-top:1px solid #dce4ef;border-radius:0;padding:0;margin-top:22px}
+.review-extras summary{color:#425a7b;font-weight:500}
+.review-extras[open]{padding-bottom:0}
+.review-response .review-extras input,.review-response .review-extras textarea{background:#fafcff;border:1px solid #cbd7e8;color:#293f60}
+.review-response label{color:#425a7b;font-weight:500}
+.review-actions .primary{font-weight:600;background:#3b66ce;border-color:#3b66ce;box-shadow:0 3px 8px #3b66ce20}
+.review-actions .secondary{background:transparent;border-color:transparent;box-shadow:none;color:#425a7b;font-weight:500}
+.review-actions .secondary:hover{background:#edf2f9;border-color:#d4dfef}
+.review-preview .social-card,#editor .preview-pane .social-card{border-color:#dce5f1;box-shadow:0 6px 18px #293d6306}
+.review-preview .social-name,#editor .preview-pane .social-name{font-weight:500;color:#536782}
+.review-preview .social-caption,#editor .preview-pane .social-caption{color:#293f60;font-size:14px;line-height:1.6}
+.review-preview .social-tools,#editor .preview-pane .social-tools{color:#586d89}
+.review-preview .preview-note,.review-response>.field-hint{color:#586d89}
+@media(max-width:650px){
+ .review-content>h1{font-size:26px;line-height:1.18}
+ .review-response h2{font-size:19px}
+ .review-response .review-extras{border-radius:0;padding-inline:0;margin-top:14px}
+ .review-extras summary{font-size:13px;min-height:46px}
+ .review-response .review-copy{font-size:12px;line-height:1.6}
+ .review-awaiting .review-actions{box-shadow:none;gap:12px}
+ .review-actions .primary{flex:1.35}
+ .review-actions .secondary{flex:1;padding-inline:8px}
+ .review-preview .social-caption,#editor .preview-pane .social-caption{font-size:13px}
+}
