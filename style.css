@@ -200,3 +200,46 @@ kbd{color:#586d89}
 .review-confirmation{max-width:600px;margin-inline:auto;text-align:center}
 .review-confirmation-mark{margin-inline:auto}
 .review-confirmation .review-feedback{text-align:left}
+
+/* Clear Sky, refined: quiet canvas, crisp content, deliberate scale. */
+:root{background:#f6f8fc;color:#243650;--line:#dde5f0;--muted:#526783;--ink:#243650}
+body{background:#f6f8fc;color:#243650}
+.workspace{max-width:1000px;padding-inline:40px}
+.topbar{height:94px;border-bottom:1px solid #e1e7f0}
+.wordmark{font-size:22px;letter-spacing:-.85px;gap:9px}.wordmark img{width:28px;height:28px}
+.primary{background:#3b66ce;border-color:#3b66ce;box-shadow:0 2px 5px #294e9c15;font-weight:550;border-radius:11px}
+.primary:hover{background:#3059bd;border-color:#3059bd}.primary:focus-visible{outline-color:#648cda}
+.intro{padding-top:37px;margin-bottom:28px;align-items:center}.intro h1{font-size:42px;line-height:1.12;letter-spacing:-1.8px;max-width:550px}
+.intro .eyebrow{font-size:10px;font-weight:600;color:#526783;margin-bottom:12px;letter-spacing:1.3px}
+.intro .subtitle{font-size:14px;color:#526783;line-height:1.65;margin-top:14px}
+.today{background:#eaf0fc;border:0;padding:12px 15px;border-radius:13px}.today-title{color:#355586;font-weight:600}.today-number{font-size:25px;color:#3b66ce}.today #today-count{color:#526783}
+.dropzone{background:#fff;border:1px dashed #bccce3;box-shadow:none;padding:23px;border-radius:15px;margin-bottom:32px}
+.dropzone:hover{background:#fafdff;border-color:#7e9bcb}.dropzone strong{font-size:14px;color:#293e5d;font-weight:550}.drop-subtitle{font-size:12px;color:#526783}.drop-icon{background:#edf3ff;color:#4b70b7;border-radius:11px;width:42px;height:42px;padding:10px}.drop-icon svg{width:22px;height:22px}.drop-arrow{color:#526783}
+.workspace main>section{margin-bottom:29px}.section-head{margin-bottom:11px}.section-head h2{font-size:13px;text-transform:none;letter-spacing:-.1px;font-weight:600;color:#293e5d}.section-head .count{background:#e7edf7;color:#526783;font-size:11px;border-radius:6px;margin-left:4px}
+.post-list{display:grid;gap:9px}.post-row,.post-row+.post-row,.post-row:last-child{background:#fff;border:1px solid #e0e7f0;border-radius:14px;padding:17px;gap:15px}
+.thumbnail{width:64px;height:64px;border-radius:10px;border-color:#e2e8f1}.row-title{font-size:15px;font-weight:550;color:#293e5d;letter-spacing:-.3px}.row-meta,.row-platform{font-size:11px;color:#526783}.row-status{font-size:11px;color:#526783}
+.row-actions .secondary{background:#eef3fd;border:1px solid #dbe5f6;color:#375b96;border-radius:9px}.row-actions .text-button{color:#526783}
+.empty-state{border:1px solid #e0e7f0;background:#ffffff80;border-radius:14px;padding:22px;min-height:88px}.empty-state strong{color:#425a78;font-size:13px}.empty-state p{color:#586d89;font-size:12px;line-height:1.6;margin-top:6px}
+.archive-section .section-head{border:0}.archive-note{font-size:12px;color:#586d89}.archive-section{padding-bottom:0}footer{border-top:1px solid #e0e7f0;padding-top:20px;margin-top:4px}.local-note,.backup-actions .text-button{font-size:11px;color:#526783}.storage-help{font-size:11px;line-height:1.6;color:#586d89}
+dialog{border:1px solid #d5deec;border-radius:22px;background:#fff;box-shadow:0 24px 80px #1c325b24}.dialog-header{background:#fff;padding:24px 28px;border-color:#e4eaf3}.dialog-header h2{font-size:25px;letter-spacing:-.8px;color:#293e5d}.dialog-header .eyebrow{color:#526783}
+.details-pane{background:#fff}.details-pane input,.details-pane textarea{background:#f8faff;border:1px solid #d8e1ee;color:#293e5d;border-radius:10px}.details-pane label,.details-pane legend{color:#425a78}.preview-pane{background:#eef3fa}.preview-tabs{background:#e1e9f5}.preview-tabs button[aria-selected=true]{color:#305995;box-shadow:0 1px 3px #2436500a}
+.social-card{border:1px solid #dde5ef;box-shadow:0 4px 16px #273f6506}.social-head{background:#fff}.review-avatar{background:#edf3ff;color:#597caf}.social-caption{color:#293e5d}
+.review-page{max-width:960px;padding-inline:36px}.review-header{height:86px;border-bottom:1px solid #e0e7f0}.review-header .wordmark{font-size:22px;color:#293e5d}.review-topnote{font-size:9px;letter-spacing:1.5px;color:#526783}
+.review-content{padding-top:31px}.review-content>h1{font-size:34px;line-height:1.17;font-weight:600;max-width:660px;letter-spacing:-1.2px}.review-content>.eyebrow{font-size:9px;letter-spacing:1.6px;margin-bottom:12px}.review-content>.subtitle{font-size:13px;margin-top:11px;color:#526783}
+.review-grid{gap:42px;margin-top:30px;grid-template-columns:1fr 1fr}.review-preview .social-card{max-width:340px}.review-preview .preview-note{font-size:11px;line-height:1.6;max-width:340px;margin:12px auto 0;color:#586d89}
+.review-response{padding:25px;background:#fff;border:1px solid #e0e7f0;border-radius:17px}.review-response h2{font-size:22px;letter-spacing:-.5px;color:#293e5d}.review-response .review-copy{font-size:13px;line-height:1.65;margin-bottom:17px}.review-extras{border-top-color:#e1e7f0}.review-extras summary{color:#425a78}.review-response .review-extras input,.review-response .review-extras textarea{background:#f8faff;border-color:#d8e1ee}
+.review-response .review-actions{gap:10px}.review-actions .secondary{background:transparent;border-color:transparent;color:#425a78}.review-actions .secondary:hover{background:#edf2f9}.review-response>.field-hint{font-size:11px;line-height:1.6}
+.review-confirmation{background:#fff;border:1px solid #dce6f4;box-shadow:0 4px 20px #293d6305;max-width:480px;padding:27px;margin:25px auto 0;border-radius:18px}.review-confirmation-mark{background:#e8f0ff;color:#3564ce;width:46px;height:46px;margin-bottom:14px}.review-confirmation .eyebrow{font-size:9px;letter-spacing:1.3px}.review-confirmation h2{font-size:28px;font-weight:600;letter-spacing:-.8px}.review-confirmation>p:last-of-type{color:#526783;font-size:14px;max-width:330px;margin-inline:auto}.review-complete .review-grid{margin-top:24px}.review-complete .review-preview .social-card{max-width:280px}
+@media(max-width:650px){
+ .workspace{padding-inline:20px}.topbar{height:76px}.wordmark{font-size:21px}.topbar #add{min-height:42px;padding:10px 14px;font-size:12px}
+ .intro{padding-top:27px;gap:16px;margin-bottom:23px}.intro h1{font-size:34px;line-height:1.12;letter-spacing:-1.3px;max-width:290px}.intro .subtitle{font-size:13px;line-height:1.65;margin-top:13px}.today{margin-top:16px;padding:7px 10px;border-radius:9px}.today-number{font-size:16px}.today-title{font-size:11px}
+ .dropzone{padding:17px 15px;gap:11px;margin-bottom:27px}.dropzone strong{font-size:13px}.drop-subtitle{font-size:11px;line-height:1.55}.drop-icon{width:35px;height:35px;padding:8px}.drop-icon svg{width:19px;height:19px}.drop-arrow{display:none}
+ .workspace main>section{margin-bottom:25px}.section-head h2{font-size:13px}.post-row,.post-row+.post-row,.post-row:last-child{padding:13px;gap:12px}.thumbnail{width:56px;height:56px}.row-title{font-size:14px}.row-actions{margin-left:68px;gap:15px}.row-actions .secondary{font-size:11px;padding:8px 11px;min-height:38px}.empty-state{padding:18px;min-height:84px}.empty-state p{font-size:11px}
+ footer{padding-top:17px}.backup-actions{gap:11px}.storage-help{font-size:11px}
+ #editor .dialog-header{padding:17px 20px 14px}#editor .dialog-header h2{font-size:22px}.editor-mobile-tabs{background:#fff}.editor-grid .preview-pane{padding:20px 18px}.editor-dock{background:#fff!important}
+ .review-page{padding:0 20px 28px}.review-header{height:72px}.review-content{padding-top:25px}.review-content>h1{font-size:25px;line-height:1.2;letter-spacing:-.8px;max-width:330px}.review-content>.eyebrow{font-size:9px;margin-bottom:10px}.review-content>.subtitle{margin-top:10px;font-size:12px}.review-grid{margin-top:24px;gap:22px}.review-preview .social-card{max-width:280px}.review-preview .preview-note{max-width:280px;font-size:11px;margin-top:11px}
+ .review-response{padding:0;background:transparent;border:0;border-radius:0}.review-response h2{font-size:20px}.review-response .review-copy{font-size:12px;margin:8px 0 12px}.review-response .review-extras{margin-top:15px}.review-awaiting .review-actions{background:#fff;border-top:1px solid #dce5f0;padding-top:11px;gap:12px}.review-actions .secondary{font-size:12px}.review-response>.field-hint{font-size:11px}
+ .review-confirmation{max-width:360px;margin-top:22px;padding:23px 20px;border-radius:16px}.review-confirmation h2{font-size:26px}.review-confirmation>p:last-of-type{font-size:13px;line-height:1.6;max-width:260px}.review-confirmation-mark{width:43px;height:43px}.review-complete .review-grid{margin-top:23px}.review-complete .review-preview .social-card{max-width:250px}
+}
+
+@media(min-width:370px) and (max-width:650px){#editor .platform-choices{gap:4px}#editor .platform-choice{padding:7px;font-size:10px;min-height:36px}}
