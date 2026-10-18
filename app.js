@@ -19,17 +19,30 @@
     const n = el('button',cls); if (iconName) n.append(icon(iconName)); n.append(document.createTextNode(text));
     n.addEventListener('click', () => Promise.resolve().then(action).catch(report)); return n;
   }
-  // Only the original bundled sample is upgraded; personal uploads never match this digest.
+  // Recognise exact bundled artwork, never post titles or personal uploads.
   async function upgradeSampleArtwork() {
-    const oldHash = "d881cab387263c9abef81c6bd79c4e3e056ab64910c1fed27b36e8ac9ae24f7e";
-    let artwork;
-    for (const post of await store.all()) {
-      if (!(post.image instanceof Blob) || post.image.size !== 15053) continue;
-      const digest = await crypto.subtle.digest("SHA-256", await post.image.arrayBuffer());
-      const hash = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2,"0")).join("");
-      if (hash !== oldHash) continue;
-      if (!artwork) { const response = await fetch("sample-grow.svg"); if (!response.ok) return; const source = URL.createObjectURL(await response.blob()); const img = new Image(); try { await new Promise((resolve,reject) => { img.onload=resolve; img.onerror=reject; img.src=source; }); const canvas=document.createElement("canvas"); canvas.width=900; canvas.height=1200; canvas.getContext("2d").drawImage(img,0,0); artwork=await new Promise(resolve=>canvas.toBlob(resolve,"image/png")); if (!artwork) return; } finally { URL.revokeObjectURL(source); } }
-      await store.update(post.id, p => ({...p, image:artwork, width:900, height:1200, status:p.status === "posted" ? "posted" : "pending", share:undefined, updatedAt:Date.now()}));
+    const legacyHash = "d881cab387263c9abef81c6bd79c4e3e056ab64910c1fed27b36e8ac9ae24f7e";
+    const records = (await store.all()).sort((a,b)=>a.id.localeCompare(b.id));
+    const candidates = records.filter(p=>p.image instanceof Blob && !p.sampleArtworkVersion);
+    if (!candidates.length) return;
+    const hash = async blob => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",await blob.arrayBuffer())),b=>b.toString(16).padStart(2,"0")).join("");
+    const render = async file => {
+      const response=await fetch(file); if(!response.ok) throw new Error("Sample artwork unavailable");
+      const source=URL.createObjectURL(await response.blob()),img=new Image();
+      try { await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=reject;img.src=source;});
+        const canvas=document.createElement("canvas");canvas.width=900;canvas.height=1200;canvas.getContext("2d").drawImage(img,0,0);
+        return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error("Sample image unavailable")),"image/png"));
+      } finally { URL.revokeObjectURL(source); }
+    };
+    const grow=await render("sample-grow.svg"),growHash=await hash(grow);
+    const files=["sample-grow.svg","sample-perspective.svg","sample-good-day.svg"],cache=new Map([[files[0],grow]]);
+    let index=0;
+    for (const post of candidates) {
+      const digest=await hash(post.image); if(digest!==legacyHash && digest!==growHash) continue;
+      const file=files[index++ % files.length];
+      if(!cache.has(file)) cache.set(file,await render(file));
+      const image=cache.get(file),changed=digest!==await hash(image);
+      await store.update(post.id,p=>({...p,image,width:900,height:1200,sampleArtworkVersion:2,...(changed?{status:p.status==="posted"?"posted":"pending",share:undefined,updatedAt:Date.now()}:{} )}));
     }
   }
   function current() { return posts.find(p => p.id === selectedId); }
