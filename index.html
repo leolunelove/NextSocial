@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#faf9f6">
+  <meta name="theme-color" content="#ffffff">
   <meta name="description" content="A small, private workspace for your next social post. Drafts stay on your device. Share selected posts for approval.">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://qbkrqibmolaetilruxki.supabase.co; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <title>NextSocial — Your personal content workspace</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=warm-20261018">
+  <link rel="stylesheet" href="style.css?v=green-20261018">
   <script src="core.js" defer></script>
   <script src="storage.js" defer></script>
-  <script src="app.js?v=warm-20261018" defer></script>
-  <script src="sharing.js?v=warm-20261018" defer></script>
+  <script src="app.js?v=green-20261018" defer></script>
+  <script src="sharing.js?v=green-20261018" defer></script>
   <script src="profile.js" defer></script>
 </head>
 <body>
@@ -39,22 +39,23 @@
   <div class="workspace">
     <header class="topbar">
       <a class="wordmark" href="./index.html" aria-label="NextSocial home"><img src="icon.svg" alt="" width="30" height="30">NextSocial</a>
+      <nav class="workspace-nav" aria-label="Workspace sections"><a href="#workspace-home" aria-current="location"><svg><use href="#i-image"/></svg>Overview</a><a href="#up-next"><svg><use href="#i-calendar"/></svg>Up next</a><a href="#pending"><svg><use href="#i-comment"/></svg>Pending</a><a href="#posted"><svg><use href="#i-check"/></svg>Posted</a></nav>
       <button class="primary" id="add" disabled><svg><use href="#i-plus"/></svg>Add <span class="desktop-label">content</span></button>
     </header>
-    <main>
+    <main id="workspace-home">
       <div class="intro">
-        <div><p class="eyebrow">YOUR NEXT POST</p><h1>Good things come next.</h1><p class="subtitle">A quiet space to prepare, preview and approve your next post.</p></div>
+        <div><p class="eyebrow">YOUR NEXT POST</p><h1>Your workspace.</h1><p class="subtitle">Create. Preview. Get the green light.</p></div>
         <div class="today" title="Approved posts planned for today"><span class="today-icon"><svg><use href="#i-calendar"/></svg></span><div><span class="today-title">Today</span><span id="today-count">0 posts ready</span></div><span class="today-number" id="today-number">0</span></div>
       </div>
       <div id="error-banner" role="alert" hidden></div>
       <button class="dropzone" id="dropzone" disabled>
         <span class="drop-icon"><svg><use href="#i-image"/></svg><span>+</span></span>
-        <span><strong>Your next post starts here.</strong><span class="drop-subtitle">Drop it here, choose a file, or paste <kbd id="paste-shortcut">⌘ V</kbd></span></span>
+        <span><strong>Your next great post.</strong><span class="drop-subtitle">Drop it here, choose a file, or paste <kbd id="paste-shortcut">⌘ V</kbd></span></span>
         <span class="drop-arrow"><svg><use href="#i-arrow"/></svg></span>
       </button>
-      <section aria-labelledby="up-next-heading"><div class="section-head"><h2 id="up-next-heading"><span class="status-dot green"></span>Up next <span class="count" id="approved-count">0</span></h2><span class="section-note">Ready when you are</span></div><div id="approved-list" class="post-list"></div></section>
-      <section aria-labelledby="pending-heading"><div class="section-head"><h2 id="pending-heading"><span class="status-dot amber"></span>Pending <span class="count" id="pending-count">0</span></h2><span class="section-note">A second look before it goes out</span></div><div id="pending-list" class="post-list"></div></section>
-      <section class="archive-section" aria-labelledby="posted-heading"><div class="section-head"><h2 id="posted-heading"><span class="status-dot gray"></span>Posted <span class="count" id="posted-count">0</span></h2><button id="archive-toggle" class="text-button" aria-expanded="false" aria-controls="posted-list">View archive <svg><use href="#i-arrow"/></svg></button></div><p id="archive-note" class="archive-note">Your finished posts will find a home here.</p><div id="posted-list" class="post-list" hidden></div></section>
+      <section id="up-next" aria-labelledby="up-next-heading"><div class="section-head"><h2 id="up-next-heading"><span class="status-dot green"></span>Up next <span class="count" id="approved-count">0</span></h2><span class="section-note">Ready when you are</span></div><div id="approved-list" class="post-list"></div></section>
+      <section id="pending" aria-labelledby="pending-heading"><div class="section-head"><h2 id="pending-heading"><span class="status-dot amber"></span>Pending <span class="count" id="pending-count">0</span></h2><span class="section-note">A second look before it goes out</span></div><div id="pending-list" class="post-list"></div></section>
+      <section id="posted" class="archive-section" aria-labelledby="posted-heading"><div class="section-head"><h2 id="posted-heading"><span class="status-dot gray"></span>Posted <span class="count" id="posted-count">0</span></h2><button id="archive-toggle" class="text-button" aria-expanded="false" aria-controls="posted-list">View archive <svg><use href="#i-arrow"/></svg></button></div><p id="archive-note" class="archive-note">Your finished posts will find a home here.</p><div id="posted-list" class="post-list" hidden></div></section>
     </main>
     <footer><span class="local-note"><svg><use href="#i-lock"/></svg><span>Drafts stay on this device <span class="footer-dot">·</span> <span id="storage-state">Opening your workspace…</span></span></span><div class="backup-actions"><button id="profile-tool" class="text-button">Profile preview</button><span>·</span><button id="export" class="text-button" disabled>Export backup</button><span>·</span><button id="import" class="text-button" disabled>Import backup</button></div></footer>
     <p class="storage-help">Your browser keeps your posts. A backup keeps them safe if you clear browser data.</p>

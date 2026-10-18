@@ -313,6 +313,8 @@
   channel?.addEventListener('message',() => { if (!$('editor').open && !busy) refresh().catch(report); });
   setInterval(() => { if (ready && !document.hidden) render(); },60000);
   if (!/Mac|iPhone|iPad/.test(navigator.platform)) $('paste-shortcut').textContent = 'Ctrl V';
+  const workspaceLinks=[...document.querySelectorAll('.workspace-nav a')];
+  workspaceLinks.forEach(link=>link.addEventListener('click',()=>{workspaceLinks.forEach(item=>item.removeAttribute('aria-current'));link.setAttribute('aria-current','location');}));
   window.HubApp = { current, all:()=>posts, refresh, fillEditor, closeEditor, flushSave, move, renderMockup, postPreview, report, toast, notify, openEditor, render, icon, el, button, isReady:()=>ready, isBusy:()=>busy || Object.keys(dirty).length>0 || (selectedId && $('save-state').textContent==='Saving…'), setBusy:value=>{busy=value;} };
   if (new URLSearchParams(location.hash.slice(1)).has('review')) return;
   (async () => {

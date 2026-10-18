@@ -19,7 +19,7 @@
 - **See the post.** Switch between Instagram, LinkedIn, X, and Facebook previews. The editor and approval page use the same layouts, including platform-specific image proportions.
 - **Get a second look.** Create a private approval link and send it yourself. The reviewer can approve or request changes without an account.
 - **Keep moving.** Pending holds drafts and reviews. Approved posts move to Up Next, ordered by date. Today counts approved posts planned for the current day; Mark as Posted moves finished work into the archive.
-- **Make it comfortable.** Clear Sky styling, readable text, compact mobile previews, and approval actions that stay within reach.
+- **Make it comfortable.** Green accents, readable text, compact mobile previews, and approval actions that stay within reach.
 - **Keep a copy.** Export and import a backup of your local posts. The quiet Profile preview tool lets you try a photo with an Instagram story ring and Notes bubble.
 
 ## Get started
@@ -58,7 +58,7 @@ Open [localhost:8080](http://127.0.0.1:8080/). Local drafts work in this browser
 | Path | Purpose |
 | --- | --- |
 | [index.html](index.html) | Workspace and editor structure |
-| [style.css](style.css) | Clear Sky styling and responsive layouts |
+| [style.css](style.css) | Visual styling and responsive layouts |
 | [app.js](app.js) | Workspace interactions and shared social previews |
 | [core.js](core.js) | Post states, dates, platform suggestions, and image ratios |
 | [storage.js](storage.js) | Local IndexedDB persistence |
