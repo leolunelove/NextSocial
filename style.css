@@ -190,3 +190,13 @@ kbd{color:#586d89}
  .review-actions .secondary{flex:1;padding-inline:8px}
  .review-preview .social-caption,#editor .preview-pane .social-caption{font-size:13px}
 }
+
+/* Centred review introduction and response hierarchy. */
+.review-content>.eyebrow,.review-content>h1,.review-content>.subtitle{text-align:center;margin-inline:auto}
+.review-content>.subtitle{max-width:560px}
+.review-preview .social-card{margin-inline:auto}
+.review-preview .preview-note{text-align:center}
+.review-response>h2,.review-response>.review-copy,.review-response>.field-hint{text-align:center}
+.review-confirmation{max-width:600px;margin-inline:auto;text-align:center}
+.review-confirmation-mark{margin-inline:auto}
+.review-confirmation .review-feedback{text-align:left}
