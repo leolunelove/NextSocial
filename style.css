@@ -360,3 +360,18 @@ dialog::backdrop{background:#171d244a;backdrop-filter:blur(5px)}
  .review-awaiting .review-actions{padding-top:12px;box-shadow:0 -4px 20px #00000006}.review-actions button{min-height:48px}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Calm, honest image states; no broken-image glyphs or dummy artwork. */
+.thumbnail,.social-media{position:relative}
+.image-loading{background:#f2f3f2}
+.image-loading img{opacity:0}
+.image-unavailable{background:linear-gradient(145deg,#f5f7f5,#edf1ee)!important}
+.image-fallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px;gap:10px;color:#5d6961}
+.image-fallback[hidden]{display:none}
+.image-fallback-mark{display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#fff9;border:1px solid #dce4de;color:#698674}
+.image-fallback-mark svg{width:23px;height:23px}
+.image-fallback-title{font-size:13px;font-weight:600;line-height:1.4;letter-spacing:0}
+.image-fallback-copy{max-width:220px;font-size:12px;line-height:1.6;color:#69736c}
+.thumbnail .image-fallback{padding:12px;gap:10px}.thumbnail .image-fallback-mark{width:40px;height:40px;border-radius:12px}
+.social-media.image-unavailable img,.thumbnail.image-unavailable img{display:none}
+@media(max-width:650px){.thumbnail .image-fallback{padding:8px;gap:5px}.thumbnail .image-fallback-mark{width:29px;height:29px;border:0;background:transparent}.thumbnail .image-fallback-mark svg{width:24px;height:24px}.thumbnail .image-fallback-title{font-size:9px;line-height:1.2}.image-fallback{padding:16px}}

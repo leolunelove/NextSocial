@@ -57,10 +57,22 @@
     $('archive-toggle').replaceChildren(document.createTextNode(archiveOpen ? 'Close archive' : 'View archive'),icon('arrow'));
     $('storage-state').textContent = 'Saved locally';
   }
+  function appendPostImage(container, source, title, compact = false) {
+    const img = el("img"); img.alt = title || "Post image";
+    const fallback = el("div", "image-fallback");
+    const mark = el("span", "image-fallback-mark"); mark.append(icon("image"));
+    fallback.append(mark, el("span", "image-fallback-title", "Image unavailable"));
+    if (!compact) fallback.append(el("span", "image-fallback-copy", "The image could not be loaded. Your post details are still here."));
+    fallback.hidden = true; fallback.setAttribute("role", "status");
+    container.classList.add("image-loading");
+    img.onload = () => { container.classList.remove("image-loading", "image-unavailable"); fallback.hidden = true; img.hidden = false; };
+    img.onerror = () => { container.classList.remove("image-loading"); container.classList.add("image-unavailable"); img.hidden = true; fallback.hidden = false; };
+    container.append(img, fallback); img.src = source;
+  }
   function row(p) {
     const n = el('article','post-row'); n.setAttribute('aria-label',p.title || 'Untitled post');
     const thumb = button('','thumbnail',() => openEditor(p.id)); thumb.setAttribute('aria-label',`Preview ${p.title || 'untitled post'}`);
-    const img = el('img'); img.src = imageURL(p); img.alt = p.title || 'Post image'; img.loading = 'lazy'; thumb.append(img);
+    appendPostImage(thumb, imageURL(p), p.title, true);
     const info = el('div','row-info'), meta = el('div','row-meta'), platform = el('span','row-platform'); platform.append(icon(icons[p.platform]),document.createTextNode(p.platform));
     const date = p.status === 'posted' ? H.dateKey(new Date(p.postedAt)) : p.plannedDate;
     const dateText = H.dateLabel(date), late = p.status === 'approved' && date && date < H.dateKey();
@@ -147,7 +159,7 @@
     who.append(el('div','social-sub',platform));
     const avatar=el('div','avatar review-avatar');avatar.append(icon('image'));head.append(avatar,who,el('span','social-menu','···'));
     const media = el('div','social-media'), ratio = H.previewRatio(platform,p.width,p.height);
-    media.style.aspectRatio = String(ratio); const img = el('img'); img.src = source; img.alt = p.title || 'Your post image'; media.append(img);
+    media.style.aspectRatio = String(ratio); appendPostImage(media, source, p.title);
     const caption = el('p','social-caption');
     if (p.caption) {
       caption.append(document.createTextNode(p.caption));
