@@ -19,6 +19,19 @@
     const n = el('button',cls); if (iconName) n.append(icon(iconName)); n.append(document.createTextNode(text));
     n.addEventListener('click', () => Promise.resolve().then(action).catch(report)); return n;
   }
+  // Only the original bundled sample is upgraded; personal uploads never match this digest.
+  async function upgradeSampleArtwork() {
+    const oldHash = "d881cab387263c9abef81c6bd79c4e3e056ab64910c1fed27b36e8ac9ae24f7e";
+    let artwork;
+    for (const post of await store.all()) {
+      if (!(post.image instanceof Blob) || post.image.size !== 15053) continue;
+      const digest = await crypto.subtle.digest("SHA-256", await post.image.arrayBuffer());
+      const hash = Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2,"0")).join("");
+      if (hash !== oldHash) continue;
+      if (!artwork) { const response = await fetch("sample-grow.svg"); if (!response.ok) return; const source = URL.createObjectURL(await response.blob()); const img = new Image(); try { await new Promise((resolve,reject) => { img.onload=resolve; img.onerror=reject; img.src=source; }); const canvas=document.createElement("canvas"); canvas.width=900; canvas.height=1200; canvas.getContext("2d").drawImage(img,0,0); artwork=await new Promise(resolve=>canvas.toBlob(resolve,"image/png")); if (!artwork) return; } finally { URL.revokeObjectURL(source); } }
+      await store.update(post.id, p => ({...p, image:artwork, width:900, height:1200, status:p.status === "posted" ? "posted" : "pending", share:undefined, updatedAt:Date.now()}));
+    }
+  }
   function current() { return posts.find(p => p.id === selectedId); }
   function imageURL(post) { if (!urls.has(post.id)) urls.set(post.id, URL.createObjectURL(post.image)); return urls.get(post.id); }
   function toast(message) { clearTimeout(toastTimer); $('toast').textContent = message; $('toast').hidden = false; toastTimer = setTimeout(() => $('toast').hidden = true, 4500); }
@@ -330,7 +343,7 @@
   window.HubApp = { current, all:()=>posts, refresh, fillEditor, closeEditor, flushSave, move, renderMockup, postPreview, report, toast, notify, openEditor, render, icon, el, button, isReady:()=>ready, isBusy:()=>busy || Object.keys(dirty).length>0 || (selectedId && $('save-state').textContent==='Saving…'), setBusy:value=>{busy=value;} };
   if (new URLSearchParams(location.hash.slice(1)).has('review')) return;
   (async () => {
-    try { await store.open(); await refresh(); ready = true; for (const id of ['add','dropzone','export','import']) $(id).disabled = false; }
+    try { await store.open(); await upgradeSampleArtwork().catch(console.warn); await refresh(); ready = true; for (const id of ['add','dropzone','export','import']) $(id).disabled = false; }
     catch(e) { $('storage-state').textContent = 'Storage unavailable'; report(new Error('Local storage could not open. Use a regular browser window with storage enabled, then reload. ' + (e.message || ''))); }
   })();
 })();
