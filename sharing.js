@@ -1,12 +1,13 @@
 (() => {
   'use strict';
   const A=window.HubApp,H=window.Hub,S=window.PostStore,$=id=>document.getElementById(id);
-  const HOST='https://leolunelove.github.io/social-hub';
+  const HOST='https://leolunelove.github.io/NextSocial';
+  const LEGACY_HOST='https://leolunelove.github.io/social-hub';
   const API='https://qbkrqibmolaetilruxki.supabase.co/functions/v1/social-hub-reviews';
   const TOKEN=/^[a-f0-9]{64}$/;
   let sharing=false,syncing=false;
   const makeToken=()=>[...crypto.getRandomValues(new Uint8Array(32))].map(v=>v.toString(16).padStart(2,'0')).join('');
-  const endpoint=s=>s.origin===HOST?HOST:API;
+  const endpoint=()=>API;
   async function request(path,secret,method='GET',data,origin=API){
     const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),20000);
     try{
@@ -17,7 +18,7 @@
     }catch(e){if(e.name==='AbortError'||e instanceof TypeError)throw new Error('Could not connect. Check your connection and try again. Your local post is safe.');throw e;}finally{clearTimeout(timeout);}
   }
   function validateShare(s){
-    if(!s||!TOKEN.test(s.reviewToken)||!TOKEN.test(s.ownerToken)||(s.id&&!TOKEN.test(s.id))||!['creating','ready'].includes(s.state)||![API,HOST,'https://social-hub-studio.leolunelove.chatgpt.site','http://localhost:8765','http://127.0.0.1:8765'].includes(s.origin)||!['pending','approved','changes','expired','revoked'].includes(s.decision)||!Number.isFinite(s.expiresAt))throw new Error('This backup has invalid approval-link data.');
+    if(!s||!TOKEN.test(s.reviewToken)||!TOKEN.test(s.ownerToken)||(s.id&&!TOKEN.test(s.id))||!['creating','ready'].includes(s.state)||![API,HOST,LEGACY_HOST,'https://social-hub-studio.leolunelove.chatgpt.site','http://localhost:8765','http://127.0.0.1:8765'].includes(s.origin)||!['pending','approved','changes','expired','revoked'].includes(s.decision)||!Number.isFinite(s.expiresAt))throw new Error('This backup has invalid approval-link data.');
     return {reviewToken:s.reviewToken,ownerToken:s.ownerToken,id:s.id||'',state:s.state,origin:s.origin,decision:s.decision,expiresAt:s.expiresAt,reviewer:String(s.reviewer||'').slice(0,100),feedback:String(s.feedback||'').slice(0,2000),decidedAt:s.decidedAt||null};
   }
   async function reviewImage(p){
