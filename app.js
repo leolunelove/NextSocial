@@ -349,7 +349,7 @@
   $('import-input').addEventListener('change',e => importBackup(e.target.files[0]).catch(report));
   window.addEventListener('beforeunload',e => { if (Object.keys(dirty).length || $('save-state').textContent === 'Saving…') { e.preventDefault(); e.returnValue = ''; } });
   document.addEventListener('visibilitychange',() => { if (document.hidden) flushSave().catch(report); else if (ready && !$('editor').open) refresh().catch(report); });
-  channel?.addEventListener('message',() => { if (!$('editor').open && !busy) refresh().catch(report); });
+  channel?.addEventListener('message',() => { if (ready && !$('editor').open && !busy) refresh().catch(report); });
   setInterval(() => { if (ready && !document.hidden) render(); },60000);
   if (!/Mac|iPhone|iPad/.test(navigator.platform)) $('paste-shortcut').textContent = 'Ctrl V';
   const workspaceLinks=[...document.querySelectorAll('.workspace-nav a')];
