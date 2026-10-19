@@ -7,7 +7,7 @@
 <p align="center">Good things come next.</p>
 
 <p align="center">
-  <a href="https://leolunelove.github.io/NextSocial/">Open NextSocial</a> ·
+  <a href="https://nextsocial.leolune.fun/">Open NextSocial</a> ·
   <a href="#get-started">Using NextSocial</a> ·
   <a href="#run-locally">Run locally</a>
 </p>
@@ -24,7 +24,7 @@
 
 ## Get started
 
-1. [Open NextSocial](https://leolunelove.github.io/NextSocial/) and paste an image or choose **Add**.
+1. [Open NextSocial](https://nextsocial.leolune.fun/) and paste an image or choose **Add**.
 2. Fill in the title, caption, platform, and optional date. Open **Preview** to check the post.
 3. Choose **Create approval link**, copy it, and send it to your reviewer. You can also choose **Approve myself**.
 4. Once approved, find the post in **Up Next**. Publish it yourself, then choose **Mark as Posted**.

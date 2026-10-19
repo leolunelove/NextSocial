@@ -1,7 +1,7 @@
 import { api } from './approval.mjs';
 import { SupabaseBucket } from './supabase-bucket.mjs';
 
-const allowed = new Set(['https://leolunelove.github.io','http://127.0.0.1:8765','http://localhost:8765']);
+const allowed = new Set(['https://nextsocial.leolune.fun','https://leolunelove.github.io','http://127.0.0.1:8765','http://localhost:8765']);
 Deno.serve(async (request: Request) => {
   const origin=request.headers.get('origin');
   if(origin && !allowed.has(origin))return new Response('Origin not allowed',{status:403});
