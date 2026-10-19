@@ -23,6 +23,7 @@
   async function upgradeSampleArtwork() {
     const legacyHash = "d881cab387263c9abef81c6bd79c4e3e056ab64910c1fed27b36e8ac9ae24f7e";
     const records = (await store.all()).sort((a,b)=>a.id.localeCompare(b.id));
+    for (const post of records) { if(post.sampleArtworkVersion === 2 && Number.isFinite(post.updatedAt)) { const timestamp=new Date(post.updatedAt).toISOString(); await store.update(post.id,p=>({...p,updatedAt:timestamp})); post.updatedAt=timestamp; } }
     const candidates = records.filter(p=>p.image instanceof Blob && !p.sampleArtworkVersion);
     if (!candidates.length) return;
     const hash = async blob => Array.from(new Uint8Array(await crypto.subtle.digest("SHA-256",await blob.arrayBuffer())),b=>b.toString(16).padStart(2,"0")).join("");
@@ -42,7 +43,7 @@
       const file=files[index++ % files.length];
       if(!cache.has(file)) cache.set(file,await render(file));
       const image=cache.get(file),changed=digest!==await hash(image);
-      await store.update(post.id,p=>({...p,image,width:900,height:1200,sampleArtworkVersion:2,...(changed?{status:p.status==="posted"?"posted":"pending",share:undefined,updatedAt:Date.now()}:{} )}));
+      await store.update(post.id,p=>({...p,image,width:900,height:1200,sampleArtworkVersion:2,...(changed?{status:p.status==="posted"?"posted":"pending",share:undefined,updatedAt:new Date().toISOString()}:{} )}));
     }
   }
   function current() { return posts.find(p => p.id === selectedId); }
