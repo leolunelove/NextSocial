@@ -97,7 +97,7 @@
         if(!container.querySelector('.empty-state'))container.replaceChildren(empty(...data));
       }
       for (const p of items) {
-        const version=JSON.stringify([p.title,p.platform,p.plannedDate,p.status,p.postedAt,p.share?.decision,p.share?.state,p.share?.expiresAt,!!p.share&&p.share.expiresAt<=Date.now()]);
+        const version=JSON.stringify([today,p.title,p.platform,p.plannedDate,p.status,p.postedAt,p.share?.decision,p.share?.state,p.share?.expiresAt,!!p.share&&p.share.expiresAt<=Date.now()]);
         let node=existing.get(p.id);if(!node||node.dataset.version!==version){node=row(p);node.dataset.version=version;}
         next.push(node);
       }
