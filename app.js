@@ -167,7 +167,7 @@
   function openEditor(id) {
     const p = posts.find(p => p.id === id); if (!p) return;
     selectedId = id; dirty = {}; previewPlatform = p.platform; setEditorView('details'); clearError();
-    editorReturnFocus=document.activeElement; $('approved-review-details').open=false;
+    editorReturnFocus=document.activeElement; M.setDisclosure($('approved-review-details'),false);
     fillEditor(); renderTabs(); renderMockup(); M.open($('editor'));
     // Keep the image and preview tabs visible on opening, including on mobile.
     $('close-editor').focus({preventScroll:true}); $('editor').scrollTop = 0;
@@ -224,7 +224,7 @@
     panel.setAttribute('aria-label',posted?'Posted post summary':waiting?'Shared post summary':'Approved post summary');
     review.querySelector('summary').textContent=waiting?'Approval link & details':'Approval details & link';
     if(approved)review.append(info);else review.before(info);
-    if(!wasApproved)review.open=false;
+    if(!wasApproved)M.setDisclosure(review,false);
     panel.replaceChildren(); if(!approved)return;
     const title=el('h3','summary-title',p.title || 'Untitled post');
     const meta=el('div','summary-meta'),platform=el('span','summary-platform');

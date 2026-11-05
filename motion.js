@@ -2,7 +2,7 @@
 (() => {
   'use strict';
   const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const active = new Map(), closing = new WeakMap(), disclosures=new WeakSet();
+  const active = new Map(), closing = new WeakMap(), disclosures=new WeakMap();
   const ease = 'cubic-bezier(.22,1,.36,1)';
   function stop(node) { const animation=active.get(node); if(animation){active.delete(node);animation.cancel();} }
   function play(node, frames, options={}) {
@@ -33,8 +33,9 @@
     closing.set(dialog,promise);return promise;
   }
   function disclosure(node) {
-    if(!node||disclosures.has(node))return;disclosures.add(node);
+    if(!node||disclosures.has(node))return;
     const summary=node.querySelector('summary');let target=node.open,animating=false,sequence=0;
+    disclosures.set(node,open=>{sequence++;target=open;animating=false;stop(node);node.open=open;node.style.overflow='';});
     summary.addEventListener('click',event=>{
       event.preventDefault();target=animating?!target:!node.open;animating=true;const version=++sequence;
       const start=node.getBoundingClientRect().height;stop(node);
@@ -44,6 +45,7 @@
       });
     });
   }
+  function setDisclosure(node,open){if(!node)return;const settle=disclosures.get(node);if(settle)settle(!!open);else node.open=!!open;}
   preference.addEventListener('change',()=>{if(preference.matches)for(const node of [...active.keys()])stop(node);});
-  window.HubMotion={play,enter,pulse,open,close,stop,disclosure,reduced:()=>preference.matches};
+  window.HubMotion={play,enter,pulse,open,close,stop,disclosure,setDisclosure,reduced:()=>preference.matches};
 })();

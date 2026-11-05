@@ -39,7 +39,7 @@
     if(!p.share)return;
     if(p.share.decision==='expired'||p.share.expiresAt<=Date.now())throw new Error('This link has expired. Open the post and replace its link.');
     try{await navigator.clipboard.writeText(link(p));A.toast('Approval link copied. Send it to your reviewer.');}
-    catch{if(A.current()?.id!==p.id)A.openEditor(p.id);editorState(p);const details=$('approval-url')?.closest('details');if(details)details.open=true;$('approval-url')?.focus();$('approval-url')?.select();A.toast('Copy the selected approval link.');}
+    catch{if(A.current()?.id!==p.id)A.openEditor(p.id);editorState(p);const details=$('approval-url')?.closest('details');if(details)window.HubMotion.setDisclosure(details,true);$('approval-url')?.focus();$('approval-url')?.select();A.toast('Copy the selected approval link.');}
   }
   function effectiveDecision(p){return p.share?.decision==='pending'&&p.share.expiresAt<=Date.now()?'expired':p.share?.decision;}
   function statusLabel(p){
@@ -189,7 +189,7 @@
       form.append(extras,error,actions,A.el('p','field-hint','No account needed. Your response goes straight to the sender.'));
       page.classList.add('review-awaiting');
       async function respond(decision){
-        error.textContent='';note.removeAttribute('aria-invalid');if(decision==='changes'&&!note.value.trim()){extras.open=true;note.setAttribute('aria-invalid','true');error.textContent='What would you like changed? Add a quick note, then send it.';note.focus();return;}
+        error.textContent='';note.removeAttribute('aria-invalid');if(decision==='changes'&&!note.value.trim()){window.HubMotion.setDisclosure(extras,true);note.setAttribute('aria-invalid','true');error.textContent='What would you like changed? Add a quick note, then send it.';note.focus();return;}
         approve.disabled=changes.disabled=true;(decision==='approved'?approve:changes).setAttribute('aria-busy','true');approve.textContent=decision==='approved'?'Saving approval…':'Approve post';changes.textContent=decision==='changes'?'Sending…':'Request changes';
         try{const result=await request('/api/review',secret,'POST',{decision,reviewer:name.value,feedback:note.value});draw({...p,...result},true);}
         catch(e){approve.removeAttribute('aria-busy');changes.removeAttribute('aria-busy');error.textContent=e.message;if(e.status===410){page.classList.remove('review-awaiting');actions.remove();error.textContent='This link has expired. Ask the sender for a fresh approval link. Your response was not saved.';}else{approve.disabled=changes.disabled=false;approve.textContent='Approve post';changes.textContent='Request changes';}error.tabIndex=-1;error.focus();error.scrollIntoView({block:'center'});}
