@@ -5,6 +5,15 @@
   const statuses = ['pending', 'approved', 'posted'];
   const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
   const limits = { image: 20 * 1024 * 1024, backup: 250 * 1024 * 1024, records: 1000 };
+  function reviewRouteChanged(from,to) {
+    const key=hash=>new URLSearchParams(hash.replace(/^#/,'' )).get('review');
+    return key(from)!==key(to);
+  }
+  function viewportGeometry(layoutHeight, viewport) {
+    if(!viewport || Math.abs((viewport.scale||1)-1)>.01)return {height:layoutHeight,top:0,bottom:0};
+    const height=Math.min(layoutHeight,Math.max(0,viewport.height)),top=Math.max(0,viewport.offsetTop||0);
+    return {height,top,bottom:Math.max(0,layoutHeight-height-top)};
+  }
   function dateKey(date = new Date()) {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
   }
@@ -68,7 +77,7 @@
     if (p.status === 'posted' && !p.postedAt) throw new Error('Posted date is missing.');
     return p;
   }
-  const api = { platforms, statuses, imageTypes, limits, dateKey, validDate, dateLabel, ratioLabel, suggested, previewRatio, sortPosts, transition, edit, validateRecord };
+  const api = { platforms, statuses, imageTypes, limits, reviewRouteChanged, viewportGeometry, dateKey, validDate, dateLabel, ratioLabel, suggested, previewRatio, sortPosts, transition, edit, validateRecord };
   if (typeof module !== 'undefined') module.exports = api;
   else root.Hub = api;
 })(typeof window !== 'undefined' ? window : globalThis);

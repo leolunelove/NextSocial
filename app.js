@@ -1,12 +1,21 @@
 /* NextSocial local workspace. Selected review copies are shared by sharing.js. */
 (() => {
   'use strict';
-  const H = window.Hub, store = window.PostStore;
+  const H = window.Hub, store = window.PostStore, M = window.HubMotion;
+  const entryHash=location.hash;
+  window.addEventListener('hashchange',()=>{if(H.reviewRouteChanged(entryHash,location.hash))location.reload();});
+  const fitVisibleViewport=()=>{
+    const box=H.viewportGeometry(window.innerHeight,window.visualViewport),style=document.documentElement.style;
+    style.setProperty('--visible-height',box.height+'px');style.setProperty('--visible-top',box.top+'px');
+  };
+  window.visualViewport?.addEventListener('resize',fitVisibleViewport);
+  window.visualViewport?.addEventListener('scroll',fitVisibleViewport);
+  window.addEventListener('resize',fitVisibleViewport);fitVisibleViewport();
   const $ = id => document.getElementById(id);
   const icons = { Instagram: 'instagram', LinkedIn: 'linkedin', X: 'x', Facebook: 'facebook' };
   const statusNames = { pending: 'Pending approval', approved: 'Approved', posted: 'Posted' };
   let posts = [], selectedId = null, previewPlatform = 'Instagram', ready = false, busy = false;
-  let dirty = {}, saveTimer, savePromise = Promise.resolve(), toastTimer, archiveOpen = false;
+  let dirty = {}, saveTimer, savePromise = Promise.resolve(), toastTimer, archiveOpen = false, closePromise, editorReturnFocus, toastSequence=0, previewSerial=0;
   const urls = new Map();
   const channel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('social-hub-updates') : null;
   function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text != null) n.textContent = text; return n; }
@@ -48,7 +57,12 @@
   }
   function current() { return posts.find(p => p.id === selectedId); }
   function imageURL(post) { if (!urls.has(post.id)) urls.set(post.id, URL.createObjectURL(post.image)); return urls.get(post.id); }
-  function toast(message) { clearTimeout(toastTimer); $('toast').textContent = message; $('toast').hidden = false; toastTimer = setTimeout(() => $('toast').hidden = true, 4500); }
+  function toast(message) {
+    clearTimeout(toastTimer); const node=$('toast'),sequence=++toastSequence;
+    const parent=[...document.querySelectorAll('dialog[open]')].at(-1)||document.body;parent.append(node);
+    node.textContent=message;node.hidden=false;M.enter(node,6);
+    toastTimer=setTimeout(()=>{M.play(node,[{opacity:1},{opacity:0}],{duration:160}).then(()=>{if(toastSequence===sequence)node.hidden=true;});},4200);
+  }
   function report(error) {
     console.error(error);
     const message = error?.name === 'QuotaExceededError' ? 'This browser is out of space. Export a backup, then free some space and try again.' : error?.message || 'Something went wrong. Please try again.';
@@ -63,26 +77,54 @@
     for (const [id,url] of urls) if (!posts.some(p => p.id === id)) { URL.revokeObjectURL(url); urls.delete(id); }
     render();
   }
-  function empty(title, text, iconName) { const n = el('div','empty-state'); const copy = el('div'); copy.append(el('strong','',title),el('p','',text)); n.append(icon(iconName),copy); return n; }
+  function empty(title, text, iconName) {
+    const n=el('div','empty-state'),mark=el('div','empty-mark'),copy=el('div');
+    mark.setAttribute('aria-hidden','true');mark.append(icon(iconName));
+    copy.append(el('strong','',title),el('p','',text));n.append(mark,copy);return n;
+  }
   function render() {
-    const today = H.dateKey();
+    const today = H.dateKey(), before=new Map();
+    const focused=document.activeElement, focusRow=focused?.closest('.post-row');
+    const focusKey=focusRow?.dataset.id, focusLabel=focused?.getAttribute('aria-label')||focused?.textContent;
+    document.querySelectorAll('.post-row').forEach(n=>before.set(n.dataset.id,n.getBoundingClientRect()));
     for (const status of H.statuses) {
       const items = H.sortPosts(posts,status); $(status + '-count').textContent = items.length;
-      const container = $(status + '-list'); container.replaceChildren();
+      const container = $(status + '-list');
+      const existing=new Map([...container.querySelectorAll('.post-row')].map(n=>[n.dataset.id,n]));
+      const next=[];
       if (!items.length) {
         const data = status === 'approved' ? ['Ready for what’s next.','Approved posts will line up here, ordered by date.','check'] : status === 'pending' ? ['Every post starts with an idea.','Paste an image above, then add the details and get a second look.','image'] : ['All caught up.','Posts you mark as posted will appear here.','check'];
-        container.append(empty(...data));
+        if(!container.querySelector('.empty-state'))container.replaceChildren(empty(...data));
       }
-      for (const p of items) container.append(row(p));
+      for (const p of items) {
+        const version=JSON.stringify([p.title,p.platform,p.plannedDate,p.status,p.postedAt,p.share?.decision,p.share?.state,p.share?.expiresAt,!!p.share&&p.share.expiresAt<=Date.now()]);
+        let node=existing.get(p.id);if(!node||node.dataset.version!==version){node=row(p);node.dataset.version=version;}
+        next.push(node);
+      }
+      if(items.length){
+        for(const node of [...container.children])if(!next.includes(node))node.remove();
+        next.forEach((node,index)=>{if(container.children[index]!==node)container.insertBefore(node,container.children[index]||null);});
+      }
+      if(!document.querySelector('dialog[open]'))for(const node of next){
+        const old=before.get(node.dataset.id),rect=node.getBoundingClientRect();
+        if(!old)M.enter(node,10);
+        else if(Math.abs(old.y-rect.y)>1)M.play(node,[{translate:`0 ${Math.max(-80,Math.min(80,old.y-rect.y))}px`},{translate:'0 0'}]);
+      }
     }
     const count = posts.filter(p => p.status === 'approved' && p.plannedDate === today).length;
-    $('today-number').textContent = count; $('today-count').textContent = count === 1 ? '1 post ready' : `${count} posts ready`;
+    if($('today-number').textContent!==String(count)){ $('today-number').textContent=count; if(ready)M.pulse($('today-number')); }
+    document.querySelector('.today').classList.toggle('has-posts',count>0); $('today-count').textContent = count === 1 ? '1 post ready' : `${count} posts ready`;
     const done = posts.filter(p => p.status === 'posted').length;
     $('archive-note').textContent = done ? `${done} ${done === 1 ? 'post, out in the world.' : 'posts, out in the world.'}` : 'Your finished posts will find a home here.';
     $('archive-note').hidden = archiveOpen; $('posted-list').hidden = !archiveOpen;
     $('archive-toggle').setAttribute('aria-expanded',String(archiveOpen));
     $('archive-toggle').replaceChildren(document.createTextNode(archiveOpen ? 'Close archive' : 'View archive'),icon('arrow'));
     $('storage-state').textContent = 'Saved locally';
+    if(focusKey&&!focused.isConnected&&!document.querySelector('dialog[open]')){
+      const target=[...document.querySelectorAll('.post-row')].find(n=>n.dataset.id===focusKey);
+      const buttons=target?.getClientRects().length?[...target.querySelectorAll('button')]:[];
+      (buttons.find(b=>(b.getAttribute('aria-label')||b.textContent)===focusLabel)||buttons[0]||$('archive-toggle')).focus({preventScroll:true});
+    }
   }
   function appendPostImage(container, source, title, compact = false) {
     const img = el("img"); img.alt = title || "Post image";
@@ -97,7 +139,7 @@
     container.append(img, fallback); img.src = source;
   }
   function row(p) {
-    const n = el('article','post-row'); n.setAttribute('aria-label',p.title || 'Untitled post');
+    const n = el('article','post-row'); n.setAttribute('aria-label',p.title || 'Untitled post'); n.dataset.id=p.id;n.dataset.status=p.status;
     const thumb = button('','thumbnail',() => openEditor(p.id)); thumb.setAttribute('aria-label',`Preview ${p.title || 'untitled post'}`);
     appendPostImage(thumb, imageURL(p), p.title, true);
     const info = el('div','row-info'), meta = el('div','row-meta'), platform = el('span','row-platform'); platform.append(icon(icons[p.platform]),document.createTextNode(p.platform));
@@ -108,15 +150,16 @@
     meta.append(platform,el('span','meta-dot','·'),label);
     const title = button(p.title || 'Untitled post','row-title',() => openEditor(p.id));
     info.append(meta,title,el('span','row-status',window.HubSharing?.statusLabel(p) || statusNames[p.status]));
+    const canCopy=p.share?.state==='ready'&&p.share.decision==='pending'&&p.share.expiresAt>Date.now();
     const actions = el('div','row-actions'); actions.append(button('Preview','text-button',() => openEditor(p.id)));
-    if (p.status !== 'posted') actions.append(button(p.status === 'pending' ? (p.share?.state === 'ready' ? 'Copy link' : 'Get approval') : 'Mark as Posted','secondary',() => p.status === 'pending' ? (p.share?.state === 'ready' ? window.HubSharing.copyLink(p) : openEditor(p.id)) : move(p.id,'post'),p.status==='pending'?'arrow':'check'));
+    if (p.status !== 'posted') actions.append(button(p.status === 'pending' ? (canCopy?'Copy link':p.share?.decision==='changes'?'Review feedback':'Get approval') : 'Mark as Posted','secondary',() => p.status === 'pending' ? (canCopy ? window.HubSharing.copyLink(posts.find(item=>item.id===p.id)||p) : openEditor(p.id)) : move(p.id,'post'),p.status==='pending'?'arrow':'check'));
     n.append(thumb,info,actions); return n;
   }
   async function move(id, action) {
     if (busy) return;
-    await flushSave(); busy = true;
+    busy = true;
     try {
-      clearError(); await store.update(id,p => H.transition(p,action)); await refresh(); notify();
+      await flushSave();clearError(); await store.update(id,p => H.transition(p,action)); await refresh(); notify();
       if (selectedId === id && $('editor').open) { fillEditor(); renderMockup(); }
       toast({approve:'Approved. Your post is up next.',post:'Marked as posted. Nicely done.',restore:'Moved back to Pending.',unapprove:'Moved back to Pending.'}[action]);
     } finally { busy = false; }
@@ -124,23 +167,21 @@
   function openEditor(id) {
     const p = posts.find(p => p.id === id); if (!p) return;
     selectedId = id; dirty = {}; previewPlatform = p.platform; setEditorView('details'); clearError();
-    fillEditor(); renderTabs(); renderMockup(); $('editor').showModal(); document.body.classList.add('modal-open');
+    editorReturnFocus=document.activeElement; $('approved-review-details').open=false;
+    fillEditor(); renderTabs(); renderMockup(); M.open($('editor'));
     // Keep the image and preview tabs visible on opening, including on mobile.
     $('close-editor').focus({preventScroll:true}); $('editor').scrollTop = 0;
   }
-  const mobileEditor = window.matchMedia('(max-width:650px)');
-  const editorActions = document.querySelector('.editor-actions');
-  function positionEditorActions() {
-    if(mobileEditor.matches) $('editor-dock').append(editorActions);
-    else $('editor-details-pane').insertBefore(editorActions,$('share-explainer'));
-  }
-  mobileEditor.addEventListener('change',positionEditorActions);
-  positionEditorActions();
+  const editorActions=document.querySelector('.editor-actions');
+  $('editor-dock').append(editorActions);M.disclosure($('approved-review-details'));
   function setEditorView(view) {
+    const changed=$('editor').dataset.view!==view;
     $('editor').dataset.view=view;
     $('editor').querySelector('.editor-grid').scrollTop=0;
     $('editor-details-tab').setAttribute('aria-selected',String(view==='details'));
     $('editor-preview-tab').setAttribute('aria-selected',String(view==='preview'));
+    $('editor-details-tab').tabIndex=view==='details'?0:-1;$('editor-preview-tab').tabIndex=view==='preview'?0:-1;
+    if(changed&&$('editor').open)M.enter($(view==='details'?'editor-details-pane':'editor-preview-pane'),5);
   }
   $('editor-details-tab').addEventListener('click',()=>setEditorView('details'));
   $('editor-preview-tab').addEventListener('click',()=>setEditorView('preview'));
@@ -158,23 +199,54 @@
     for (const platform of H.platforms) {
       const b = button(platform,'platform-choice',() => {
         if (platform === current().platform) return;
-        current().platform = platform; queueSave('platform',platform); previewPlatform = platform; renderChoices(); renderTabs(); renderMockup();
+        current().platform = platform; queueSave('platform',platform); previewPlatform = platform; renderChoices(); renderTabs(); renderMockup(true);
       },icons[platform]);
       b.dataset.platform = platform; b.disabled = p.status === 'posted'; b.setAttribute('aria-pressed',String(platform === p.platform)); choices.append(b);
     }
     const suggestions = H.suggested(p.width,p.height);
-    $('suggestion').textContent = `Shape suits ${suggestions.join(', ')}. A guide, not a restriction.`;
+    const cropsEverywhere=H.platforms.every(platform=>Math.abs(H.previewRatio(platform,p.width,p.height)-p.width/p.height)>.001);
+    $('suggestion').textContent=cropsEverywhere?`This is a ${p.height>p.width?'tall':'wide'} image. Check the preview for platform cropping.`:`Shape suits ${suggestions.join(', ')}. A guide, not a restriction.`;
     $('date-note').textContent = p.status === 'approved' ? 'Editing this post returns it to Pending for a fresh look.' : p.status === 'posted' ? `Posted ${new Date(p.postedAt).toLocaleDateString(undefined,{dateStyle:'medium'})}. Move to Pending to edit.` : 'No rush. Leave it open, or pick a day.';
     $('editor-action').textContent = p.status === 'pending' ? 'Approve post' : p.status === 'approved' ? 'Mark as Posted' : 'Back to Pending';
-    $('secondary-action').hidden = p.status !== 'approved'; captionMeta(); window.HubSharing?.editorState(p);
+    $('secondary-action').hidden = p.status !== 'approved'; captionMeta(); window.HubSharing?.editorState(p); renderApprovedSummary(p);
+  }
+  function renderApprovedSummary(p) {
+    const posted=p.status==='posted',waiting=p.status==='pending'&&p.share?.state==='ready',approved=p.status!=='pending'||waiting,wasApproved=$('editor').dataset.approved==='true';
+    const feedback=waiting&&p.share.decision==='changes',expired=waiting&&(['expired','revoked'].includes(p.share.decision)||p.share.expiresAt<=Date.now());
+    $('editor').dataset.waiting=String(waiting);
+    const stage=p.status+':'+(p.share?.decision||'draft'),changedStage=$('editor').dataset.stage!==stage;
+    $('editor').dataset.stage=stage;$('editor').dataset.approved=String(approved);
+    if(changedStage&&$('editor').open){$('editor').querySelector('.editor-grid').scrollTop=0;$('editor-details-pane').scrollTop=0;M.enter($('editor-details-pane'),6);}
+    $('editor-heading').textContent=posted?'Out in the world.':feedback?'A little fine-tuning.':expired?'A fresh start.':waiting?'Ready for a second look.':approved?'Ready to post.':'Make it ready to share.';
+    $('editor-details-tab').textContent=approved?'Summary':'Details';
+    const panel=$('approved-summary'),review=$('approved-review-details'),info=$('share-info');
+    panel.hidden=!approved; review.hidden=!approved || !p.share;
+    panel.setAttribute('aria-label',posted?'Posted post summary':waiting?'Shared post summary':'Approved post summary');
+    review.querySelector('summary').textContent=waiting?'Approval link & details':'Approval details & link';
+    if(approved)review.append(info);else review.before(info);
+    if(!wasApproved)review.open=false;
+    panel.replaceChildren(); if(!approved)return;
+    const title=el('h3','summary-title',p.title || 'Untitled post');
+    const meta=el('div','summary-meta'),platform=el('span','summary-platform');
+    platform.append(icon(icons[p.platform]),document.createTextNode(p.platform));
+    const planned=el('div','summary-date');planned.append(icon('calendar'));
+    planned.append(document.createTextNode(p.plannedDate ? new Date(p.plannedDate+'T12:00:00').toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short',year:'numeric'}) : 'No date planned'));
+    meta.append(platform,planned);
+    const caption=el('section','summary-caption');caption.append(el('h4','','Caption'),el('p',p.caption?'':'summary-no-caption',p.caption || 'No caption added.'));
+    const status=el('div','summary-approval'+(waiting?' waiting':''));status.append(icon(waiting?'comment':'check'),el('span','',feedback?'Changes requested'+(p.share.reviewer?' by '+p.share.reviewer:''):expired?'This approval link is no longer active':waiting?'Waiting for the green light':posted?'Posted '+new Date(p.postedAt).toLocaleDateString(undefined,{month:'short',day:'numeric'}):p.share?.reviewer ? 'Approved by '+p.share.reviewer : 'Approved and ready to post'));
+    const note=el('p','summary-posting-note',posted?'A good idea, shared. Move it to Pending if you want to make a new version.':feedback?'Choose “Make changes” below to revise this version and replace its link.':expired?'Create a fresh link for your reviewer.':waiting?'Copy the link below and send it to your reviewer. We’ll check for their response.':'Post on '+p.platform+', then mark it as posted here.');
+    panel.append(title,meta,status);
+    if(feedback&&p.share.feedback)panel.append(el('blockquote','summary-feedback',p.share.feedback));
+    panel.append(note,caption,button('Download image','text-button summary-download',()=>download(p.image,p.filename || 'post.png'),'download'));
   }
   function renderChoices() { document.querySelectorAll('.platform-choice').forEach(b => b.setAttribute('aria-pressed',String(b.dataset.platform === current().platform))); }
   function renderTabs() {
     $('preview-tabs').replaceChildren();
+    $('preview-tabs').style.setProperty('--tab-index',H.platforms.indexOf(previewPlatform));
     for (const platform of H.platforms) {
-      const b = button(platform,'',() => { previewPlatform = platform; renderTabs(); renderMockup(); $('preview-tabs').querySelector('[aria-selected=true]').focus(); },icons[platform]);
+      const b = button(platform,'',() => { previewPlatform = platform; renderTabs(); renderMockup(true); $('preview-tabs').querySelector('[aria-selected=true]').focus(); },icons[platform]);
       b.id = 'preview-' + platform.toLowerCase(); b.setAttribute('role','tab'); b.setAttribute('aria-selected',String(platform === previewPlatform)); b.setAttribute('aria-controls','mockup'); b.tabIndex = platform === previewPlatform ? 0 : -1;
-      b.addEventListener('keydown', e => { if (['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) { e.preventDefault(); const i = H.platforms.indexOf(platform); previewPlatform = H.platforms[e.key === 'Home' ? 0 : e.key === 'End' ? 3 : (i + (e.key === 'ArrowRight' ? 1 : 3)) % 4]; renderTabs(); renderMockup(); $('preview-tabs').querySelector('[aria-selected=true]').focus(); } });
+      b.addEventListener('keydown', e => { if (['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) { e.preventDefault(); const i = H.platforms.indexOf(platform); previewPlatform = H.platforms[e.key === 'Home' ? 0 : e.key === 'End' ? 3 : (i + (e.key === 'ArrowRight' ? 1 : 3)) % 4]; renderTabs(); renderMockup(true); $('preview-tabs').querySelector('[aria-selected=true]').focus(); } });
       $('preview-tabs').append(b);
     }
     $('mockup').setAttribute('aria-labelledby','preview-' + previewPlatform.toLowerCase());
@@ -186,23 +258,33 @@
     who.append(el('div','social-sub',platform));
     const avatar=el('div','avatar review-avatar');avatar.append(icon('image'));head.append(avatar,who,el('span','social-menu','···'));
     const media = el('div','social-media'), ratio = H.previewRatio(platform,p.width,p.height);
-    media.style.aspectRatio = String(ratio); appendPostImage(media, source, p.title);
-    const caption = el('p','social-caption');
-    if (p.caption) {
-      caption.append(document.createTextNode(p.caption));
-    }
+    card.style.setProperty('--media-ratio',ratio);media.style.aspectRatio = String(ratio); appendPostImage(media, source, p.title);
+    const copy=el('div','social-copy'),caption=el('p','social-caption');caption.id='preview-caption-'+(++previewSerial);
+    const more=button('Read full caption','caption-toggle',()=>{
+      const height=caption.offsetHeight;card.dataset.captionExpanded=String(card.dataset.captionExpanded!=='true');
+      updatePreviewCaption(card,caption.textContent);
+      M.play(caption,[{height:height+'px'},{height:caption.offsetHeight+'px'}],{duration:230});
+    });more.setAttribute('aria-controls',caption.id);copy.append(caption,more);
     const tools = el('div','social-tools'); tools.setAttribute('aria-hidden','true');
     if (platform === 'Instagram') tools.append(icon('heart'),icon('comment'),icon('send'),icon('bookmark','bookmark'));
     else if (platform === 'X') tools.append(icon('comment'),icon('repeat'),icon('heart'),icon('bookmark'),icon('send'));
     else for (const [text,name] of [['Like','heart'],['Comment','comment'],[platform === 'LinkedIn' ? 'Repost' : 'Share','repeat']]) { const s = el('span'); s.append(icon(name),document.createTextNode(text)); tools.append(s); }
-    if (platform === 'Instagram') card.append(head,media,tools,caption,el('div','social-bottom','JUST NOW'));
-    else card.append(head,caption,media,tools);
-    return card;
+    if (platform === 'Instagram') card.append(head,media,tools,copy,el('div','social-bottom','JUST NOW'));
+    else card.append(head,copy,media,tools);
+    updatePreviewCaption(card,p.caption);return card;
   }
-  function renderMockup() {
+  function updatePreviewCaption(card,text) {
+    const caption=card.querySelector('.social-caption'),more=card.querySelector('.caption-toggle');caption.textContent=text;
+    const long=text.length>220||text.split('\n').length>6,expanded=card.dataset.captionExpanded==='true';
+    caption.classList.toggle('is-collapsed',long&&!expanded);more.hidden=!long;
+    more.textContent=expanded?'Show less':'Read full caption';more.setAttribute('aria-expanded',String(expanded));
+  }
+  function renderMockup(animate=false) {
     const p=current(); if(!p)return;
     const platform=previewPlatform,ratio=H.previewRatio(platform,p.width,p.height);
-    $('mockup').replaceChildren(postPreview(p,platform,imageURL(p)));
+    const existing=$('mockup').firstElementChild;
+    if(existing?.dataset.postId===p.id&&existing?.dataset.platform===platform){updatePreviewCaption(existing,p.caption);existing.querySelector('.social-media img').alt=p.title||'Post image';}
+    else {const card=postPreview(p,platform,imageURL(p));card.dataset.postId=p.id;card.dataset.platform=platform;$('mockup').replaceChildren(card);if(animate)M.enter(card,5);}
     const cropped = Math.abs(ratio - p.width/p.height) > .001;
     $('crop-note').textContent = cropped ? 'This feed preview crops the edges to fit. Your original image stays untouched.' : `${H.ratioLabel(p.width,p.height)} · Full image, original proportions.`;
     captionMeta();
@@ -246,7 +328,15 @@
     });
     return savePromise;
   }
-  async function closeEditor() { await flushSave(); $('editor').close(); document.body.classList.remove('modal-open'); selectedId = null; }
+  async function closeEditor() {
+    if(closePromise)return closePromise;
+    $('editor').inert=true;
+    closePromise=(async()=>{const id=selectedId;await flushSave();await M.close($('editor'));selectedId=null;
+      const row=[...document.querySelectorAll('.post-row')].find(n=>n.dataset.id===id);
+      const fallback=row?.getClientRects().length?row.querySelector('.row-title'):row?$('archive-toggle'):$('add');
+      (editorReturnFocus?.isConnected?editorReturnFocus:fallback).focus({preventScroll:true});
+    })().finally(()=>{closePromise=null;$('editor').inert=false;});return closePromise;
+  }
   function sizeLabel(bytes) { return bytes >= 1024*1024 ? (bytes/1024/1024).toFixed(1) + ' MB' : Math.max(1,Math.round(bytes/1024)) + ' KB'; }
   function dimensions(blob) {
     return new Promise((resolve,reject) => {
@@ -259,9 +349,9 @@
   }
   async function ingest(files) {
     if (!ready || busy || !files.length) return;
-    if ($('editor').open) await closeEditor();
-    busy = true; $('add').disabled = true; $('dropzone').disabled = true; clearError();
+    busy = true; $('add').disabled = true; $('dropzone').disabled = true; $('dropzone').setAttribute('aria-busy','true');clearError();
     try {
+      if ($('editor').open) await closeEditor();
       if (files.length > 100) throw new Error('Please add up to 100 images at a time.');
       const records = [], errors = [];
       for (const file of files) {
@@ -269,12 +359,12 @@
           if (!H.imageTypes.includes(file.type)) throw new Error(`${file.name || 'This file'}: use PNG, JPEG, WebP, or GIF.`);
           if (!file.size || file.size > H.limits.image) throw new Error(`${file.name || 'This image'}: please keep images under 20 MB.`);
           const d = await dimensions(file), now = new Date().toISOString();
-          records.push({id:crypto.randomUUID(),title:(file.name && !/^(image|pasted)[.-]/i.test(file.name) ? file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ') : 'Untitled post').slice(0,200),caption:'',platform:H.suggested(d.width,d.height)[0],plannedDate:'',status:'pending',createdAt:now,updatedAt:now,approvedAt:null,postedAt:null,filename:(file.name || 'image.png').slice(0,300),image:new Blob([file],{type:file.type}),...d});
+          records.push({id:crypto.randomUUID(),title:(file.name && !/^(image|pasted|clipboard)([.-]|$)/i.test(file.name) ? file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' ') : 'Untitled post').slice(0,200),caption:'',platform:H.suggested(d.width,d.height)[0],plannedDate:'',status:'pending',createdAt:now,updatedAt:now,approvedAt:null,postedAt:null,filename:(file.name || 'image.png').slice(0,300),image:new Blob([file],{type:file.type}),...d});
         } catch (e) { errors.push(e.message); }
       }
       if (records.length) { await store.addMany(records); await refresh(); notify(); if (records.length === 1) openEditor(records[0].id); toast(`${records.length === 1 ? 'Image saved' : records.length + ' images saved'}. Ready for a little polish.`); }
       if (errors.length) report(new Error(errors.slice(0,3).join(' ') + (errors.length > 3 ? ` ${errors.length-3} more files skipped.` : '')));
-    } finally { busy = false; $('add').disabled = false; $('dropzone').disabled = false; $('file-input').value = ''; }
+    } finally { busy = false; $('add').disabled = false; $('dropzone').disabled = false; $('dropzone').removeAttribute('aria-busy'); $('file-input').value = ''; }
   }
   function download(blob,name) { const url = URL.createObjectURL(blob), a = el('a'); a.href = url; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url),60000); }
   function dataURL(blob) { return new Promise((resolve,reject) => { const r = new FileReader(); r.onload = () => resolve(r.result); r.onerror = () => reject(r.error); r.readAsDataURL(blob); }); }
@@ -326,23 +416,36 @@
   document.addEventListener('dragleave',e => { if (--dragDepth <= 0) { dragDepth = 0; $('drop-overlay').hidden = true; } });
   document.addEventListener('drop',e => { e.preventDefault(); dragDepth = 0; $('drop-overlay').hidden = true; if (!$('confirm-dialog').open) ingest([...e.dataTransfer.files]).catch(report); });
   window.addEventListener('blur',() => { dragDepth = 0; $('drop-overlay').hidden = true; });
-  $('archive-toggle').addEventListener('click',() => { archiveOpen = !archiveOpen; render(); });
+  let archiveTransition=0;
+  $('archive-toggle').addEventListener('click',async()=>{
+    const version=++archiveTransition;archiveOpen=!archiveOpen;
+    if(archiveOpen){render();M.enter($('posted-list'));}
+    else {await M.play($('posted-list'),[{opacity:1,height:$('posted-list').offsetHeight+'px'},{opacity:0,height:'0px'}],{duration:190});if(version===archiveTransition)render();}
+  });
   $('close-editor').addEventListener('click',() => closeEditor().catch(report));
   $('editor').addEventListener('cancel',e => { e.preventDefault(); closeEditor().catch(report); });
   for (const [id,field] of [['post-title','title'],['post-caption','caption'],['post-date','plannedDate']]) {
-    $(id).addEventListener('input',e => { const p = current(); if (!p) return; if (field === 'plannedDate' && !e.target.validity.valid) { $('save-state').textContent = 'Choose a valid date'; return; } p[field] = e.target.value; queueSave(field,e.target.value); if (field === 'caption') renderMockup(); });
+    $(id).addEventListener('input',e => { const p = current(); if (!p) return; if (field === 'plannedDate' && !e.target.validity.valid) { $('save-state').textContent = 'Choose a valid date'; return; } p[field] = e.target.value; queueSave(field,e.target.value); if (field === 'caption'||field === 'title') renderMockup(); });
   }
   $('editor-action').addEventListener('click',() => { const p = current(); if (p) (window.HubSharing ? window.HubSharing.mainAction(p) : move(p.id,p.status === 'pending' ? 'approve' : p.status === 'approved' ? 'post' : 'restore')).catch(report); });
   $('secondary-action').addEventListener('click',async () => { try { await window.HubSharing?.revoke(current()); await move(selectedId,'unapprove'); } catch(e){report(e);} });
   $('download-image').addEventListener('click',() => { const p = current(); if (p) download(p.image,p.filename || 'post-image.png'); });
   $('copy-caption').addEventListener('click',async () => {
     try { await navigator.clipboard.writeText(current().caption); toast('Caption copied. Ready when you are.'); }
-    catch { $('post-caption').focus(); $('post-caption').select(); toast('Select and copy the caption with ⌘ C or Ctrl C.'); }
+    catch {
+      if($('editor').dataset.approved==='true'){
+        const caption=$('approved-summary').querySelector('.summary-caption p'),range=document.createRange();
+        caption.tabIndex=-1;caption.focus();range.selectNodeContents(caption);const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);
+      }else{$('post-caption').focus();$('post-caption').select();}
+      toast('Caption selected. Copy it with ⌘ C or Ctrl C.');
+    }
   });
-  $('delete-post').addEventListener('click',() => $('confirm-dialog').showModal());
-  $('cancel-delete').addEventListener('click',() => $('confirm-dialog').close());
+  $('delete-post').addEventListener('click',() => M.open($('confirm-dialog')));
+  $('cancel-delete').addEventListener('click',() => M.close($('confirm-dialog')));
+  $('confirm-dialog').addEventListener('cancel',e=>{e.preventDefault();M.close($('confirm-dialog'));});
   $('confirm-delete').addEventListener('click',async () => {
-    try { await flushSave(); await window.HubSharing?.revoke(current()); await store.update(selectedId,() => null); $('confirm-dialog').close(); await closeEditor(); await refresh(); notify(); toast('Post deleted from this browser.'); } catch(e) { report(e); }
+    if($('confirm-delete').disabled)return;$('confirm-delete').disabled=true;
+    try { await flushSave(); await window.HubSharing?.revoke(current()); await store.update(selectedId,() => null); await M.close($('confirm-dialog')); await closeEditor(); await refresh(); notify(); toast('Post deleted from this browser.'); } catch(e) { report(e); } finally { $('confirm-delete').disabled=false; }
   });
   $('export').addEventListener('click',() => exportBackup().catch(report));
   $('import').addEventListener('click',() => $('import-input').click());

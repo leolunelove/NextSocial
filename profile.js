@@ -27,7 +27,7 @@
       renderedPhoto=state.photo;
     }
     for(const face of dialog.querySelectorAll('.profile-face')){
-      const img=face.querySelector('img');img.hidden=!photoUrl;if(photoUrl)img.src=photoUrl;else img.removeAttribute('src');
+      const img=face.querySelector('img');img.hidden=!photoUrl;if(photoUrl){if(img.getAttribute('src')!==photoUrl)img.src=photoUrl;}else img.removeAttribute('src');
       img.style.objectPosition=`${state.x}% ${state.y}%`;img.style.transform=`translate(${(50-state.x)*(state.zoom-1)}%, ${(50-state.y)*(state.zoom-1)}%) scale(${state.zoom})`;
       face.classList.toggle('has-photo',!!photoUrl);
     }
@@ -45,14 +45,15 @@
     try {const img=new Image();img.src=url;await img.decode();if(img.naturalWidth*img.naturalHeight>100000000)throw new Error('This photo is too large. Choose a smaller image.');}finally{URL.revokeObjectURL(url);}
     state={...state,photo:file,zoom:1,x:50,y:50};render();save();
   }
-  $('profile-tool').addEventListener('click',async()=>{try{await opened;render();dialog.showModal();dialog.scrollTop=0;$('profile-controls').scrollTop=0;document.body.classList.add('modal-open');}catch(e){window.HubApp.report(e);}});
-  $('profile-close').addEventListener('click',()=>dialog.close());
+  $('profile-tool').addEventListener('click',async()=>{try{await opened;render();window.HubMotion.open(dialog);dialog.scrollTop=0;$('profile-controls').scrollTop=0;document.body.classList.add('modal-open');}catch(e){window.HubApp.report(e);}});
+  $('profile-close').addEventListener('click',()=>window.HubMotion.close(dialog));
+  dialog.addEventListener('cancel',e=>{e.preventDefault();window.HubMotion.close(dialog);});
   dialog.addEventListener('close',()=>{persist();document.body.classList.remove('modal-open');});
   document.addEventListener('visibilitychange',()=>{if(document.hidden&&saveTimer)persist();});
   $('profile-upload').addEventListener('click',()=>$('profile-file').click());
   $('profile-file').addEventListener('change',e=>{load(e.target.files[0]).catch(window.HubApp.report);e.target.value='';});
   for(const key of ['zoom','x','y'])$('profile-'+key).addEventListener('input',e=>{state[key]=Number(e.target.value);render();save();});
-  for(const key of ['story','notes'])$('profile-'+key).addEventListener('change',e=>{state[key]=e.target.checked;render();save();});
+  for(const key of ['story','notes'])$('profile-'+key).addEventListener('change',e=>{state[key]=e.target.checked;render();if(key==='notes'&&state.notes)window.HubMotion.enter($('profile-bubble'),4);save();});
   $('profile-note').addEventListener('input',e=>{state.note=e.target.value;$('profile-bubble').textContent=state.note.trim()||'A little thought…';save();});
   $('profile-remove').addEventListener('click',()=>{state.photo=null;state.zoom=1;state.x=state.y=50;render();save();});
   document.addEventListener('paste',e=>{if(!dialog.open)return;const f=[...(e.clipboardData?.items||[])].find(i=>i.kind==='file'&&i.type.startsWith('image/'));if(f){e.preventDefault();e.stopImmediatePropagation();load(f.getAsFile()).catch(window.HubApp.report);}},true);

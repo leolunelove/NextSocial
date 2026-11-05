@@ -9,15 +9,18 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' blob: data:; connect-src 'self' https://qbkrqibmolaetilruxki.supabase.co; font-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
   <title>NextSocial — Your personal content workspace</title>
   <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="style.css?v=rows-20261019">
-  <script src="core.js" defer></script>
+  <link rel="stylesheet" href="style.css?v=polish-20261104">
+  <script src="core.js?v=polish-20261104" defer></script>
   <script src="storage.js" defer></script>
-  <script src="app.js?v=rows-20261019" defer></script>
-  <script src="sharing.js?v=rows-20261019" defer></script>
-  <script src="profile.js" defer></script>
+  <link rel="stylesheet" href="polish.css?v=polish-20261104">
+  <script src="motion.js?v=polish-20261104" defer></script>
+  <script src="app.js?v=polish-20261104" defer></script>
+  <script src="sharing.js?v=polish-20261104" defer></script>
+  <script src="profile.js?v=polish-20261104" defer></script>
 </head>
 <body>
   <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg"><defs>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.2 6.8L21 12l-6.8 2.2L12 21l-2.2-6.8L3 12l6.8-2.2L12 3Z"/></symbol>
     <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
     <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8" cy="8" r="1.5"/><path d="m3 17 5-5 4 4 4-6 5 7"/></symbol>
@@ -50,7 +53,7 @@
       <div id="error-banner" role="alert" hidden></div>
       <button class="dropzone" id="dropzone" disabled>
         <span class="drop-icon"><svg><use href="#i-image"/></svg><span>+</span></span>
-        <span><strong>Your next great post.</strong><span class="drop-subtitle">Drop it here, choose a file, or paste <kbd id="paste-shortcut">⌘ V</kbd></span></span>
+        <span><strong>Something worth sharing.</strong><span class="drop-subtitle"><span class="drop-desktop">Drop it here, choose a file, or paste <kbd id="paste-shortcut">⌘ V</kbd></span><span class="drop-mobile">Choose a photo, or paste an image.</span></span></span>
         <span class="drop-arrow"><svg><use href="#i-arrow"/></svg></span>
       </button>
       <section id="up-next" aria-labelledby="up-next-heading"><div class="section-head"><h2 id="up-next-heading"><span class="status-dot green"></span>Up next <span class="count" id="approved-count">0</span></h2><span class="section-note">Ready when you are</span></div><div id="approved-list" class="post-list"></div></section>
@@ -65,16 +68,20 @@
   <div class="drop-overlay" id="drop-overlay" hidden><svg><use href="#i-image"/></svg><h2>A new idea? Drop it here.</h2><p>Each image becomes its own post.</p></div>
   <dialog id="editor" aria-labelledby="editor-heading">
     <div class="dialog-header"><div><span class="eyebrow">THE DETAILS</span><h2 id="editor-heading">Make it ready to share.</h2></div><button id="close-editor" class="icon-button" aria-label="Close preview"><svg><use href="#i-close"/></svg></button></div>
-    <div class="editor-mobile-tabs" role="tablist" aria-label="Post editor view"><button id="editor-details-tab" role="tab" aria-selected="true" aria-controls="editor-details-pane">Details</button><button id="editor-preview-tab" role="tab" aria-selected="false" aria-controls="editor-preview-pane">Preview</button></div>
+    <div class="editor-mobile-tabs" role="tablist" aria-label="Post editor view"><button id="editor-details-tab" role="tab" tabindex="0" aria-selected="true" aria-controls="editor-details-pane">Details</button><button id="editor-preview-tab" role="tab" tabindex="-1" aria-selected="false" aria-controls="editor-preview-pane">Preview</button></div>
     <div class="editor-grid">
       <div id="editor-preview-pane" class="preview-pane"><div id="preview-tabs" class="preview-tabs" role="tablist" aria-label="Preview platform"></div><div id="mockup" role="tabpanel" aria-label="Social post preview"></div><p id="crop-note" class="preview-note"></p><p class="preview-disclaimer">Feed preview · Layouts can vary by device.</p></div>
       <div id="editor-details-pane" class="details-pane"><div class="detail-top"><span id="editor-status" class="status-badge"></span><span id="save-state" role="status">Saved on this device</span></div>
-        <label for="post-title">Post title</label><input id="post-title" maxlength="200" placeholder="Give this idea a name" autocomplete="off">
+        <section id="approved-summary" class="approved-summary" aria-label="Approved post summary" hidden></section>
+        <div class="editor-fields">
+        <label for="post-title">Post title</label><input id="post-title" maxlength="200" placeholder="Give your idea a name" autocomplete="off">
         <fieldset id="platform-field"><legend>Posting to</legend><div id="platform-choices" class="platform-choices"></div></fieldset>
         <p id="suggestion" class="field-hint"></p>
         <label for="post-caption">Caption <span class="label-note">optional</span></label><textarea id="post-caption" maxlength="20000" rows="5" placeholder="What would you like to say?"></textarea><div class="caption-meta"><span id="caption-warning"></span><span id="caption-count">0 characters</span></div>
         <label for="post-date">Planned date <span class="label-note">optional</span></label><input id="post-date" type="date" min="0001-01-01" max="9999-12-31"><p id="date-note" class="field-hint">No rush. Leave it open, or pick a day.</p>
         <div class="image-details"><svg><use href="#i-image"/></svg><span id="image-metadata"></span><button class="text-button" id="download-image" aria-label="Download original image"><svg><use href="#i-download"/></svg></button></div>
+        </div>
+        <details id="approved-review-details" class="approved-review-details" hidden><summary>Approval details &amp; link</summary></details>
         <div id="share-info" hidden></div>
         <div class="editor-actions"><button class="primary" id="editor-action">Create approval link</button><button class="secondary" id="copy-caption">Copy caption</button></div>
         <p id="share-explainer" class="field-hint">Only this post is uploaded when you create a link. Anyone with the link can review it for 7 days.</p>

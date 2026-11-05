@@ -437,3 +437,41 @@ dialog::backdrop{background:#171d244a;backdrop-filter:blur(5px)}
  .workspace .archive-note,.workspace .local-note,.workspace .backup-actions .text-button,.workspace .storage-help{font-size:11px}.workspace .backup-actions{gap:10px;flex-wrap:wrap}
  .workspace .storage-help{margin-top:12px}.workspace .empty-state p{font-size:12px}
 }
+
+/* Approved posts are a readable handoff, not a disabled form. */
+.approved-summary[hidden],.approved-review-details[hidden]{display:none}
+#editor[data-approved=true] .editor-fields{display:none}
+#editor[data-approved=true] .detail-top{margin-bottom:22px}
+#editor[data-approved=true] .dialog-header .eyebrow{display:none}
+.approved-summary{margin:0 0 22px;min-width:0}
+.summary-title{font-size:25px;line-height:1.25;letter-spacing:-.7px;font-weight:650;color:#202622;margin:0 0 15px;overflow-wrap:anywhere}
+.summary-meta{display:flex;align-items:center;flex-wrap:wrap;gap:10px 20px;color:#46564c;font-size:13px;line-height:1.5}
+.summary-platform,.summary-date{display:flex;align-items:center;gap:7px}
+.summary-meta svg{width:16px;height:16px;color:#267244;flex-shrink:0}
+.summary-platform{background:#edf5ef;border:1px solid #d7e6dc;padding:6px 9px;border-radius:8px;font-weight:550}
+.summary-caption{margin:24px 0;padding:22px 0;border-top:1px solid #e4e9e5;border-bottom:1px solid #e4e9e5}
+.summary-caption h4{font-size:12px;color:#59635d;font-weight:550;margin:0 0 11px;letter-spacing:0}
+.summary-caption p{font-size:15px;line-height:1.7;color:#26342b;white-space:pre-wrap;overflow-wrap:anywhere;margin:0}
+.summary-caption p.summary-no-caption{color:#626c65;font-style:italic}
+.summary-approval{display:flex;align-items:center;gap:8px;color:#17613a;font-size:13px;font-weight:550;line-height:1.5}
+.summary-approval svg{width:18px;height:18px;padding:3px;background:#e7f3eb;box-sizing:content-box;border-radius:50%;flex-shrink:0}
+.summary-posting-note{font-size:13px;line-height:1.6;color:#59635e;margin:10px 0 4px}
+.summary-download{font-size:12px;color:#25663e;min-height:42px;display:inline-flex;align-items:center;gap:7px;padding-left:0}
+.summary-download svg{width:15px;height:15px}
+.approved-review-details{border:1px solid #dfe7e1;border-radius:10px;margin:0 0 20px;background:#fafcfb}
+.approved-review-details>summary{cursor:pointer;color:#3e5c48;font-size:12px;padding:15px;min-height:44px;box-sizing:border-box;list-style-position:inside}
+#editor[data-approved=true] #share-info{margin:0;padding:0 15px 15px;background:transparent;border:0;border-radius:0}
+#editor[data-approved=true] #share-info>strong,#editor[data-approved=true] #share-info>p{display:none}
+#editor[data-approved=true] .editor-bottom{border-top:1px solid #e8ece9;padding-top:12px;gap:15px}
+#editor[data-approved=true] .editor-bottom .text-button{min-height:42px;font-size:12px}
+@media(max-width:650px){
+ #editor[data-approved=true] .dialog-header{padding:17px 20px 14px}
+ #editor[data-approved=true] .details-pane .detail-top{margin-bottom:18px}
+ .approved-summary{margin-bottom:14px}.summary-title{font-size:22px;letter-spacing:-.5px;margin-bottom:13px}
+ .summary-meta{gap:10px 14px;font-size:12px}.summary-platform{padding:5px 8px}
+ .summary-caption{margin:19px 0;padding:18px 0}.summary-caption h4{font-size:12px;margin-bottom:9px}.summary-caption p{font-size:14px;line-height:1.65}
+ .summary-approval{font-size:12px}.summary-posting-note{font-size:12px;line-height:1.6}
+ .approved-review-details{margin-bottom:12px}.approved-review-details>summary{min-height:44px;padding:14px}
+ #editor[data-approved=true] .editor-bottom{margin-top:12px;flex-wrap:wrap;gap:8px 15px}
+ #editor[data-approved=true] .editor-bottom .text-button{font-size:11px}
+}
