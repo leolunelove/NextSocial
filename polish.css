@@ -267,3 +267,43 @@ dialog>#toast{bottom:88px;max-width:calc(100% - 36px)}
  .review-actions{flex-direction:column;align-items:stretch}
  .review-actions button{width:100%}
 }
+
+/* Studio Green: one expressive headline, quiet working surfaces. */
+.workspace .intro h1{position:relative;isolation:isolate;font-family:Georgia,"Times New Roman",serif;font-weight:400;font-size:48px;letter-spacing:-2px;line-height:1.12}
+.workspace .intro h1 em{position:relative;font-weight:400;color:#226b43;white-space:nowrap}
+.workspace .intro h1 em::after{content:'';position:absolute;left:1px;right:-3px;bottom:-3px;height:5px;border-radius:50%;background:#bfd9a4;transform:rotate(-3deg);z-index:-1}
+.workspace .intro .eyebrow{font-size:9px;letter-spacing:1.8px;color:#526e5c!important}
+.workspace .intro .subtitle{font-size:14px;color:#54635a;margin-top:13px}
+.workspace .topbar{background:#f6f8f5;border-color:#e7ece5}
+.workspace .workspace-nav a{border-radius:8px}
+.workspace .workspace-nav a[aria-current]{background:#e6eee1;color:#255b37;font-weight:600}
+.workspace .dropzone{background:#fff;border:1px dashed #a9bcae;border-radius:12px;box-shadow:none}
+.workspace .dropzone:hover{background:#f6faf4;border-color:#518763}
+.workspace .drop-icon{background:#edf4e7;border:1px solid #d7e4cc;border-radius:9px;box-shadow:3px 3px 0 #e6eddf;color:#47724b}
+.workspace .dropzone strong{color:#2c4935;font-size:15px;letter-spacing:-.2px}
+.workspace .drop-subtitle{color:#58665c}
+.workspace .empty-state{background:transparent;border:0;border-top:1px solid #e4e9e5;border-bottom:1px solid #e4e9e5;border-radius:0;padding:22px 4px}
+.workspace .empty-mark{background:#edf4e7;border-color:#dce7d2;box-shadow:none}
+.workspace #pending .empty-mark{background:#f6f1e4;border-color:#e8dfc9;box-shadow:none}
+.workspace .section-head h2{font-size:17px;letter-spacing:-.45px;font-weight:650}
+.workspace .section-head .count{background:#edf1e9;color:#53644f;font-size:10px;padding:3px 7px;border-radius:5px;min-width:21px;text-align:center}
+.workspace .row-actions .secondary{background:#f0f5ec;border-color:#dbe6d4;color:#315c39;box-shadow:none}
+.workspace .thumbnail{background:#f3f5ef;border-radius:9px;padding:5px}
+.workspace .thumbnail img{border-radius:4px}
+.workspace .thumbnail:hover img{transform:none}
+.icon-button:hover svg{transform:none}
+.workspace .today{background:#f2f5ee;border:1px solid #e0e7d9;border-radius:10px;box-shadow:none}
+.workspace .today.has-posts{background:#ecf4e5;border-color:#d6e4c8}
+.summary-approval,.review-response{box-shadow:none}
+.summary-approval{background:#f0f6eb;border-color:#dbe8d1}
+.review-response{background:#f6f8f3;border-color:#e2e8da}
+.review-confirmation-mark{background:#edf5e7;border-color:#d8e5cc;box-shadow:0 0 0 7px #f7faf3}
+@media(max-width:650px){
+ .workspace .intro h1{font-size:37px;letter-spacing:-1.4px}
+ .workspace .intro .subtitle{font-size:13px;line-height:1.65}
+ .workspace .intro .eyebrow{font-size:8px;letter-spacing:1.4px}
+ .workspace .dropzone strong{font-size:14px}
+ .workspace .empty-state{padding:20px 2px}
+ .workspace .section-head h2{font-size:16px}
+ .review-response{background:transparent;border:0}
+}
